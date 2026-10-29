@@ -174,7 +174,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <li><code>hinweis</code> – ein Satz zur Stimmung (wahlweise)</li>
       <li><code>gesetzt</code> – Zeitstempel der Änderung (ISO 8601, UTC)</li>
     </ul>
-    <p>In einer Claude-Sitzung mit angebundenem Repository (<code>add_repo</code> mit Schreibzugriff) genügt ein Befehl:</p>
+    <p>In einer Claude-Sitzung mit angebundenem Repository (<code>add_repo</code> mit Schreibzugriff): einmal je Sitzung klonen, dann bei jedem 🧭 das Skript aufrufen.</p>
 <pre id="gm-cmd"></pre>
     <p>Nur beim 🧭 setzen, und nur, wenn sich der Ortstyp ändert. Innerhalb eines Ortes bleibt die Musik, auch im Kampf.</p>
   </details>
@@ -503,7 +503,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
   function renderGm(){
     $('gm-repo').textContent=cfg.repo;$('gm-path').textContent=cfg.path;
     const r=cfg.repo,p=cfg.path;
-    $('gm-cmd').textContent='gh api -X PUT repos/'+r+'/contents/'+p+' \\\n  -f branch="'+cfg.branch+'" \\\n  -f message="Klang: Hafenstadt" \\\n  -f content="$(printf \'%s\' \'{"ort":"hafenstadt","ortname":"Monmurg","hinweis":"Die Werft hämmert bis in die Nacht.","gesetzt":"\'"$(date -u +%FT%TZ)"\'"}\' | base64 -w0)" \\\n  -f sha="$(gh api repos/'+r+'/contents/'+p+'?ref='+cfg.branch+' --jq .sha)"';
+    const dir='/home/claude/'+(r.split('/')[1]||'wegwart-klang');
+    $('gm-cmd').textContent='# einmal je Sitzung\ngit clone -q --depth 1 -b '+cfg.branch+' https://github.com/'+r+' '+dir+'\n\n# bei jedem 🧭 (Ortstyp, Ortsname, Hinweis)\n'+dir+'/setze-ort.sh hafenstadt "Monmurg" "Die Werft hämmert bis in die Nacht."';
   }
   $('cfg-form').addEventListener('submit',ev=>{
     ev.preventDefault();

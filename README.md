@@ -36,17 +36,17 @@ Musik für das Textabenteuer **Wegwart der Seeprinzen**, die von selbst wechselt
 - `hinweis` – ein Satz zur Stimmung (wahlweise)
 - `gesetzt` – Zeitstempel in UTC; eine Änderung hier löst den Wechsel aus, auch beim gleichen Ortstyp
 
-In einer Claude-Sitzung mit angebundenem Repository (`add_repo` mit Schreibzugriff) genügt ein Befehl:
+In einer Claude-Sitzung mit angebundenem Repository (`add_repo` mit Schreibzugriff) – einmal je Sitzung klonen, dann bei jedem 🧭 das Skript aufrufen:
 
 ```bash
-gh api -X PUT repos/MaxwellSilverhammer-mk/wegwart-klang/contents/klang.json \
-  -f branch="main" \
-  -f message="Klang: Hafenstadt" \
-  -f content="$(printf '%s' '{"ort":"hafenstadt","ortname":"Monmurg","hinweis":"Die Werft hämmert bis in die Nacht.","gesetzt":"'"$(date -u +%FT%TZ)"'"}' | base64 -w0)" \
-  -f sha="$(gh api repos/MaxwellSilverhammer-mk/wegwart-klang/contents/klang.json?ref=main --jq .sha)"
+# einmal je Sitzung
+git clone -q --depth 1 -b main https://github.com/MaxwellSilverhammer-mk/wegwart-klang /home/claude/wegwart-klang
+
+# bei jedem 🧭 (Ortstyp, Ortsname, Hinweis)
+/home/claude/wegwart-klang/setze-ort.sh hafenstadt "Monmurg" "Die Werft hämmert bis in die Nacht."
 ```
 
-Oder mit dem Skript, wenn das Repository ausgecheckt ist: `./setze-ort.sh hafenstadt "Monmurg" "Die Werft hämmert bis in die Nacht."`
+Das Skript holt zuerst den aktuellen Stand, schreibt `klang.json`, erzeugt einen Commit „Klang: …“ und schiebt ihn. Ohne Skript geht es auch von Hand: Datei ändern, committen, pushen. (Die GitHub-API lässt sich aus Claude-Sitzungen nur lesen, nicht schreiben; deshalb der Weg über git.)
 
 Regel: nur beim 🧭 setzen, und nur, wenn sich der Ortstyp ändert. Innerhalb eines Ortes bleibt die Musik, auch im Kampf.
 
