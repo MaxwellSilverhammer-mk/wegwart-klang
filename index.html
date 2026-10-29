@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Klangtisch · Live</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Alegreya:ital,wght@0,400;0,600;1,400&family=Alegreya+Sans:wght@400;600&display=swap">
+<style>
+/* Layout: eine Spalte – Kopf mit Statuszeile, großer Ortsblock mit Startknopf, darunter je nach Modus die Spotify-Einrichtung oder der eingebettete Player, dann die neun Ortstypen zum Umschalten von Hand, zuletzt Einstellungen und ein Abschnitt für die Spielleitung. */
+:root{
+  --bg:#e6ebed; --paper:#f4f7f8; --fg:#17232b; --muted:#5a6a73; --line:#c5cfd4;
+  --accent:#8a6a24; --accent-text:#6c5318; --accent-ink:#faf5e8; --glow:rgba(176,138,60,.35);
+  --ok:#2f7a4f; --warn:#9a5b12; --bad:#a1342f;
+  --font-display:"IM Fell English","Iowan Old Style","Palatino Linotype",Georgia,serif;
+  --font-body:"Alegreya","Iowan Old Style",Georgia,serif;
+  --font-ui:"Alegreya Sans","Segoe UI",Roboto,system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e171d; --paper:#16232b; --fg:#e5eaeb; --muted:#9cabb2; --line:#2c3d47;
+    --accent:#d2a74e; --accent-text:#e2bd68; --accent-ink:#1c1507; --glow:rgba(210,167,78,.35);
+    --ok:#6fc392; --warn:#e0a860; --bad:#e3827c;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e171d; --paper:#16232b; --fg:#e5eaeb; --muted:#9cabb2; --line:#2c3d47;
+  --accent:#d2a74e; --accent-text:#e2bd68; --accent-ink:#1c1507; --glow:rgba(210,167,78,.35);
+  --ok:#6fc392; --warn:#e0a860; --bad:#e3827c;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:17px;line-height:1.5;-webkit-text-size-adjust:100%}
+.wrap{max-width:680px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 56px;display:flex;flex-direction:column;gap:26px}
+h1,h2,h3{font-family:var(--font-display);font-weight:400;margin:0;text-wrap:balance;line-height:1.1}
+h1{font-size:2.3rem;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+h1 .live{font-family:var(--font-ui);font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-text);border:1px solid var(--accent);border-radius:999px;padding:3px 10px;line-height:1.2}
+h3{font-size:1.25rem}
+.eyebrow{font-family:var(--font-ui);font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 .35rem}
+.top{display:flex;flex-direction:column;gap:8px}
+.statusline{font-family:var(--font-ui);font-size:.92rem;color:var(--muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
+.lamp{width:10px;height:10px;border-radius:50%;background:var(--muted);flex:none}
+.lamp.ok{background:var(--ok)}.lamp.warn{background:var(--warn)}.lamp.bad{background:var(--bad)}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:22px 20px 18px;display:flex;flex-direction:column;gap:10px}
+.now-name{font-size:2.3rem}
+.now-line{margin:0;font-size:1.05rem}
+.now-hint{margin:0;font-style:italic;color:var(--muted)}
+.now-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:6px}
+.btn{font-family:var(--font-ui);font-weight:600;font-size:1.05rem;color:var(--accent-ink);background:var(--accent);border:0;padding:12px 20px;border-radius:6px;cursor:pointer;text-decoration:none;display:inline-block}
+.btn[disabled]{opacity:.55;cursor:default}
+.btn-ghost{font-family:var(--font-ui);font-weight:600;font-size:.95rem;color:var(--accent-text);background:transparent;border:1px solid var(--line);padding:9px 14px;border-radius:999px;cursor:pointer}
+.note{font-family:var(--font-ui);font-size:.9rem;color:var(--muted);margin:0;font-variant-numeric:tabular-nums}
+.card.ring{animation:ring 1.4s ease-out 1}
+@keyframes ring{0%{box-shadow:0 0 0 0 var(--glow)}100%{box-shadow:0 0 0 22px transparent}}
+.setup ol{margin:.4rem 0 0;padding-left:1.3rem}
+.setup li{margin:.3rem 0}
+.copyrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.copyrow code{word-break:break-all}
+.player{min-height:152px}
+.player iframe{border-radius:12px}
+.list-title{font-size:1.5rem;margin-bottom:10px}
+.orte{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.ort{display:grid;grid-template-columns:14px minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.dot{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--muted);justify-self:center}
+.ort.active .dot{background:var(--accent);border-color:var(--accent)}
+.ort.pending .dot{border-color:var(--accent);border-style:dashed}
+.ort-text{display:flex;flex-direction:column;min-width:0}
+.ort-name{font-family:var(--font-display);font-size:1.3rem;line-height:1.15}
+.ort.active .ort-name{color:var(--accent-text)}
+.ort-line{font-size:.95rem;color:var(--muted)}
+.ort-play{font-family:var(--font-ui);font-size:.9rem;font-weight:600;color:var(--accent-text);background:transparent;border:1px solid var(--line);border-radius:999px;padding:6px 12px;white-space:nowrap;cursor:pointer}
+details{border-top:1px solid var(--line);padding-top:14px;font-size:.95rem}
+summary{font-family:var(--font-ui);font-weight:600;cursor:pointer;color:var(--muted)}
+details p,details ul{margin:.6rem 0}
+details ul{padding-left:1.2rem}
+code,pre{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:.86em}
+code{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+pre{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:12px;overflow-x:auto;white-space:pre;margin:.6rem 0}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;margin-top:10px}
+.form .full{grid-column:1 / -1}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label{font-family:var(--font-ui);font-size:.85rem;color:var(--muted)}
+.field input,.field select{font:inherit;font-family:var(--font-ui);font-size:.95rem;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--fg);min-width:0;width:100%}
+.radios{display:flex;gap:16px;flex-wrap:wrap;font-family:var(--font-ui);font-size:.95rem}
+.radios label{display:flex;gap:6px;align-items:center}
+.form-actions{grid-column:1 / -1;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.sec-title{grid-column:1 / -1;font-family:var(--font-ui);font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:6px 0 -4px}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+[hidden]{display:none !important}
+@media (max-width:520px){.form{grid-template-columns:1fr}}
+@media (prefers-reduced-motion: reduce){.card.ring{animation:none;box-shadow:0 0 0 3px var(--glow)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <p class="eyebrow">Wegwart der Seeprinzen</p>
+      <h1>Klangtisch <span class="live">Live</span></h1>
+    </div>
+    <div class="statusline"><span class="lamp" id="lamp" aria-hidden="true"></span><span id="status">Lese das Signal des Spiels …</span></div>
+    <div class="statusline" id="playline" hidden><span class="lamp ok" aria-hidden="true"></span><span id="playtext"></span></div>
+  </header>
+
+  <section class="card" id="now" aria-live="polite">
+    <p class="eyebrow" id="now-eyebrow">Jetzt am Ort</p>
+    <h2 class="now-name" id="now-name">Noch kein Ort gesetzt</h2>
+    <p class="now-line" id="now-line">Sobald die Spielleitung beim 🧭 einen Ort setzt, wechselt die Musik von selbst.</p>
+    <p class="now-hint" id="now-hint" hidden></p>
+    <div class="now-actions">
+      <button class="btn" id="start" type="button">Klangtisch starten</button>
+      <button class="btn-ghost" id="pause" type="button" hidden>Pause</button>
+      <p class="note" id="switch-note"></p>
+    </div>
+  </section>
+
+  <section class="card setup" id="setup" hidden>
+    <h3>Spotify-App verbinden</h3>
+    <p>Der Klangtisch steuert dann deine Spotify-App auf Rechner oder Handy, mit Überblendung beim Wechsel. Einmalige Einrichtung:</p>
+    <ol>
+      <li>Auf <a href="https://developer.spotify.com/dashboard" target="_blank" rel="noopener">developer.spotify.com/dashboard</a> eine App anlegen (Name frei, etwa „Klangtisch“, API: Web API).</li>
+      <li>Als Redirect URI genau diese Adresse eintragen:
+        <div class="copyrow"><code id="redirect-uri"></code><button class="btn-ghost" type="button" id="copy-uri">Kopieren</button></div></li>
+      <li>Die Client-ID der App unten in den Einstellungen eintragen und speichern.</li>
+      <li>Dann hier „Mit Spotify verbinden“ drücken. Spotify muss auf dem Gerät geöffnet sein, auf dem gespielt werden soll.</li>
+    </ol>
+    <p class="note" id="setup-note"></p>
+  </section>
+
+  <div class="player" id="embed-iframe" hidden></div>
+
+  <section class="list">
+    <h2 class="list-title">Alle Orte</h2>
+    <ol class="orte" id="orte"></ol>
+  </section>
+
+  <details id="settings">
+    <summary>Einstellungen</summary>
+    <form class="form" id="cfg-form">
+      <p class="sec-title">Wiedergabe</p>
+      <div class="full radios">
+        <label><input type="radio" name="mode" value="connect" id="mode-connect"> Spotify-App steuern (empfohlen)</label>
+        <label><input type="radio" name="mode" value="embed" id="mode-embed"> Player hier auf der Seite</label>
+      </div>
+      <div class="field"><label for="cfg-clientid">Spotify Client-ID (für die App-Steuerung)</label><input id="cfg-clientid" type="text" autocomplete="off" spellcheck="false"></div>
+      <div class="field"><label for="cfg-device">Gerät</label><select id="cfg-device"><option value="">Automatisch (aktives Gerät)</option></select></div>
+      <div class="field"><label for="cfg-fade">Überblendung (Sekunden, 0 = harter Schnitt)</label><input id="cfg-fade" type="number" min="0" max="20" step="1"></div>
+      <div class="field"><label for="cfg-shuffle">Reihenfolge</label><select id="cfg-shuffle"><option value="1">Zufällig</option><option value="0">Wie in der Playlist</option></select></div>
+      <div class="field"><label for="cfg-switch">Wechsel (nur Player auf der Seite)</label><select id="cfg-switch"><option value="ende">am Ende des laufenden Stücks</option><option value="sofort">sofort</option></select></div>
+      <div class="field"><label for="cfg-maxwait">Spätestens nach (Sekunden)</label><input id="cfg-maxwait" type="number" min="0" max="600" step="5"></div>
+      <div class="form-actions"><button class="btn-ghost" type="button" id="dev-load">Geräte laden</button><button class="btn-ghost" type="button" id="spotify-logout">Spotify-Verbindung lösen</button></div>
+      <p class="sec-title">Signal des Spiels</p>
+      <div class="field full"><label for="cfg-repo">GitHub-Repository (Besitzer/Name)</label><input id="cfg-repo" type="text" autocomplete="off" spellcheck="false"></div>
+      <div class="field"><label for="cfg-branch">Zweig</label><input id="cfg-branch" type="text" autocomplete="off" spellcheck="false"></div>
+      <div class="field"><label for="cfg-path">Datei</label><input id="cfg-path" type="text" autocomplete="off" spellcheck="false"></div>
+      <div class="field"><label for="cfg-interval">Signal prüfen alle (Sekunden)</label><input id="cfg-interval" type="number" min="5" max="600" step="1"></div>
+      <div class="field"><label for="cfg-token">GitHub-Token (nur bei privatem Repository)</label><input id="cfg-token" type="password" autocomplete="off"></div>
+      <div class="form-actions">
+        <button class="btn-ghost" type="submit">Speichern</button>
+        <button class="btn-ghost" type="button" id="cfg-check">Signal jetzt prüfen</button>
+        <span class="note" id="cfg-note"></span>
+      </div>
+    </form>
+  </details>
+
+  <details>
+    <summary>Für die Spielleitung</summary>
+    <p>Der Klangtisch liest die Datei <code id="gm-path">klang.json</code> im Repository <code id="gm-repo">…</code> und wechselt die Playlist, sobald sich darin <code>ort</code> oder <code>gesetzt</code> ändert. Felder:</p>
+    <ul>
+      <li><code>ort</code> – Schlüssel des Ortstyps: <code>hafenstadt</code>, <code>dorf</code>, <code>landstrasse</code>, <code>kueste</code>, <code>wald</code>, <code>sumpf</code>, <code>nacht</code>, <code>schenke</code>, <code>ruinen</code></li>
+      <li><code>ortname</code> – Name des Ortes im Spiel, etwa „Monmurg“ (wahlweise)</li>
+      <li><code>hinweis</code> – ein Satz zur Stimmung (wahlweise)</li>
+      <li><code>gesetzt</code> – Zeitstempel der Änderung (ISO 8601, UTC)</li>
+    </ul>
+    <p>In einer Claude-Sitzung mit angebundenem Repository (<code>add_repo</code> mit Schreibzugriff) genügt ein Befehl:</p>
+<pre id="gm-cmd"></pre>
+    <p>Nur beim 🧭 setzen, und nur, wenn sich der Ortstyp ändert. Innerhalb eines Ortes bleibt die Musik, auch im Kampf.</p>
+  </details>
+</div>
+
+<script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
+<script>
+(function(){
+  'use strict';
+  /* ---------- Orte ---------- */
+  const ORTE=[
+    {key:'hafenstadt',name:'Hafenstadt',line:'Kai, Markt und Werft. Laute und Fiedel über dem Stimmengewirr, Taue knarren.',id:'1Q9vuWX2ZPdlboRkJ5Main'},
+    {key:'dorf',name:'Dorf und Weiler',line:'Höfe, Felder, ein Kirchlein. Harfe und Flöte, warm und bodenständig.',id:'2v5wdl16NZyXphIcRgElhY'},
+    {key:'landstrasse',name:'Landstraße',line:'Zu Fuß über Hügelwege. Gitarre und Hackbrett im Schritttempo, weite Landschaft.',id:'0lTG22AtUavg5kJ5tiizAv'},
+    {key:'kueste',name:'Küste und See',line:'Klippen, Strand, offenes Wasser. Harfe und Cello im Seewind.',id:'3ewlbzWlaVfNhJ8RkkUuIF'},
+    {key:'wald',name:'Wald und Hain',line:'Moos und Dämmerlicht. Holzflöte und Streicher, ferne Vogelstimmen.',id:'602nYr5A65NHe1vjKP3yWf'},
+    {key:'sumpf',name:'Sumpf und Moor',line:'Nebel über stillem Wasser. Tiefe Drones, einzelne Flötentöne.',id:'55Rbwla0LxYEeokLQdc2HR'},
+    {key:'nacht',name:'Nacht und Rast',line:'Kleines Feuer, Sternenhimmel, Grillen. Zarte Harfe, lange Töne.',id:'6vdRpIUlczZz9Af3pdPzXi'},
+    {key:'schenke',name:'Schenke und Herberge',line:'Kaminfeuer und Krüge. Laute, Drehleier und Fiedel, lebhaft bis gemütlich.',id:'3LvoMjqJm7OBGsYeDKIMT2'},
+    {key:'ruinen',name:'Ruinen und Unterwelt',line:'Gewölbe, Tropfen, Hall. Tiefe Streicher, Glocken- und Metallklänge.',id:'54VMiUl0OflGJOSKSTAVXk'}
+  ];
+  const byKey={};ORTE.forEach(o=>{o.uri='spotify:playlist:'+o.id;byKey[o.key]=o;});
+  const norm=s=>String(s||'').toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').replace(/[^a-z]/g,'');
+  function resolveOrt(v){
+    if(typeof v!=='string'||!v.trim())return null;
+    const n=norm(v);if(byKey[n])return byKey[n];
+    for(const o of ORTE){const nm=norm(o.name);if(n.indexOf(o.key)===0||nm.indexOf(n)===0||n.indexOf(nm)===0)return o;}
+    return null;
+  }
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+  const $=id=>document.getElementById(id);
+  const store={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}},del(k){try{localStorage.removeItem(k);}catch(e){}}};
+  const sess={get(k){try{return sessionStorage.getItem(k);}catch(e){return null;}},set(k,v){try{sessionStorage.setItem(k,v);}catch(e){}},del(k){try{sessionStorage.removeItem(k);}catch(e){}}};
+
+  /* ---------- Einstellungen ---------- */
+  const DEFAULTS={mode:'connect',clientId:'',deviceId:'',deviceName:'',fadeSec:3,shuffle:true,switchMode:'ende',maxWait:60,repo:'MaxwellSilverhammer-mk/wegwart-klang',branch:'main',path:'klang.json',interval:15,token:''};
+  const cfg=Object.assign({},DEFAULTS,store.get('klangtisch.cfg',{})||{});
+  cfg.interval=Math.min(600,Math.max(5,+cfg.interval||15));cfg.maxWait=Math.min(600,Math.max(0,+cfg.maxWait||0));cfg.fadeSec=Math.min(20,Math.max(0,+cfg.fadeSec||0));cfg.mode=cfg.mode==='embed'?'embed':'connect';
+  const saveCfg=()=>store.set('klangtisch.cfg',cfg);
+  const secure=location.protocol==='https:'||/^http:\/\/(127\.0\.0\.1|localhost)(:|\/|$)/.test(location.href);
+  const redirectUri=(()=>{try{if(location.protocol==='file:')return '';return location.origin+location.pathname.replace(/index\.html?$/,'');}catch(e){return '';}})();
+
+  const el={lamp:$('lamp'),status:$('status'),playline:$('playline'),playtext:$('playtext'),now:$('now'),eyebrow:$('now-eyebrow'),name:$('now-name'),line:$('now-line'),hint:$('now-hint'),start:$('start'),pause:$('pause'),switchNote:$('switch-note'),setup:$('setup'),setupNote:$('setup-note'),embed:$('embed-iframe'),list:$('orte'),cfgNote:$('cfg-note'),device:$('cfg-device')};
+
+  /* ---------- Liste ---------- */
+  ORTE.forEach(o=>{
+    const li=document.createElement('li');li.className='ort';li.dataset.key=o.key;
+    const dot=document.createElement('span');dot.className='dot';dot.setAttribute('aria-hidden','true');
+    const txt=document.createElement('div');txt.className='ort-text';
+    const nm=document.createElement('span');nm.className='ort-name';nm.textContent=o.name;
+    const ln=document.createElement('span');ln.className='ort-line';ln.textContent=o.line;
+    txt.appendChild(nm);txt.appendChild(ln);
+    const b=document.createElement('button');b.className='ort-play';b.type='button';b.textContent='Abspielen';b.setAttribute('aria-label',o.name+' abspielen');
+    b.addEventListener('click',()=>manual(o));
+    li.appendChild(dot);li.appendChild(txt);li.appendChild(b);
+    el.list.appendChild(li);
+  });
+  function markList(activeKey,pendingKey){
+    el.list.querySelectorAll('.ort').forEach(li=>{li.classList.toggle('active',li.dataset.key===activeKey);li.classList.toggle('pending',li.dataset.key===pendingKey&&pendingKey!==activeKey);});
+  }
+
+  /* ---------- Zustand ---------- */
+  let signal=null,playing=null,pending=null,pendingSince=0,armed=false,manualUntilNext=false,switching=false;
+  let lastCheck=0,backoffUntil=0,lastError='',etag=null,pollTimer=null,polling=false;
+
+  function setLamp(state,text){el.lamp.className='lamp'+(state?' '+state:'');el.status.textContent=text;}
+  function relTime(iso){
+    const t=Date.parse(iso||'');if(isNaN(t))return '';
+    const s=Math.max(0,Math.round((Date.now()-t)/1000));
+    if(s<60)return 'gerade eben';
+    const m=Math.round(s/60);if(m<60)return 'vor '+m+(m===1?' Minute':' Minuten');
+    const h=Math.round(m/60);if(h<24)return 'vor '+h+(h===1?' Stunde':' Stunden');
+    const d=new Date(t);return 'am '+d.getDate()+'.'+(d.getMonth()+1)+'.';
+  }
+  function renderNow(){
+    const o=playing||(signal&&signal.ort)||null;
+    const src=signal;
+    markList(playing?playing.key:null,pending?pending.key:null);
+    if(!o){el.eyebrow.textContent='Jetzt am Ort';el.name.textContent='Noch kein Ort gesetzt';el.line.textContent='Sobald die Spielleitung beim 🧭 einen Ort setzt, wechselt die Musik von selbst.';el.hint.hidden=true;}
+    else{
+      const showSignal=src&&src.ort&&src.ort.key===o.key;
+      el.eyebrow.textContent=(showSignal&&src.ortname)?src.ortname:(manualUntilNext?'Von Hand gewählt':'Jetzt am Ort');
+      el.name.textContent=o.name;el.line.textContent=o.line;
+      if(showSignal&&src.hinweis){el.hint.textContent=src.hinweis;el.hint.hidden=false;}else{el.hint.hidden=true;}
+    }
+    let note='';
+    if(switching)note='Wechsle …';
+    else if(pending)note='Wechsel zu „'+pending.name+'“ '+(cfg.switchMode==='sofort'?'jetzt':'am Ende des Stücks'+(cfg.maxWait>0?', spätestens in '+Math.max(0,Math.round((pendingSince+cfg.maxWait*1000-Date.now())/1000))+' s':''));
+    else if(!armed)note=cfg.mode==='connect'?'Einmal starten – danach wechselt der Klangtisch ohne dein Zutun.':'Einmal starten. Spielt Spotify nicht los, einmal im Player auf Play tippen; danach läuft es von allein.';
+    else if(signal&&!signal.ort&&signal.raw)note='Unbekannter Ort im Signal: „'+signal.raw+'“';
+    el.switchNote.textContent=note;
+    const needsAuth=cfg.mode==='connect'&&!tokens;
+    el.start.textContent=needsAuth?'Mit Spotify verbinden':'Klangtisch starten';
+    el.start.hidden=armed;el.start.disabled=switching;
+    el.pause.hidden=!armed||cfg.mode==='connect';
+    el.setup.hidden=!(cfg.mode==='connect'&&!tokens);
+    el.embed.hidden=cfg.mode!=='embed';
+    if(cfg.mode==='connect'&&!secure)el.setupNote.textContent='Die Steuerung der Spotify-App braucht eine Adresse mit https (zum Beispiel GitHub Pages). Als Datei geöffnet geht nur der Player auf der Seite.';
+    else el.setupNote.textContent='';
+  }
+  function renderStatus(){
+    if(lastError){setLamp('bad',lastError);return;}
+    if(!lastCheck){setLamp('','Lese das Signal des Spiels …');return;}
+    let t='Signal geprüft '+relTime(new Date(lastCheck).toISOString());
+    if(signal&&signal.gesetzt)t+=' · vom Spiel gesetzt '+relTime(signal.gesetzt);
+    setLamp(backoffUntil>Date.now()?'warn':'ok',t);
+  }
+  setInterval(()=>{renderStatus();if(pending)renderNow();},5000);
+
+  /* ---------- Spotify-App (Web API, PKCE) ---------- */
+  let tokens=store.get('klangtisch.spotify',null);
+  const SCOPES='user-modify-playback-state user-read-playback-state';
+  function randomString(n){const a=new Uint8Array(n);crypto.getRandomValues(a);const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';return Array.from(a,x=>chars[x%chars.length]).join('');}
+  async function pkceChallenge(v){const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));return btoa(String.fromCharCode(...new Uint8Array(d))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+  async function startAuth(){
+    if(!secure||!redirectUri){lastError='Für die Spotify-App-Steuerung braucht die Seite eine https-Adresse.';renderStatus();return;}
+    if(!cfg.clientId){$('settings').open=true;$('cfg-clientid').focus();el.cfgNote.textContent='Bitte zuerst die Spotify Client-ID eintragen und speichern.';return;}
+    const verifier=randomString(64);sess.set('klangtisch.pkce',verifier);const state=randomString(16);sess.set('klangtisch.state',state);sess.set('klangtisch.armed','1');
+    const challenge=await pkceChallenge(verifier);
+    const u=new URL('https://accounts.spotify.com/authorize');
+    u.search=new URLSearchParams({client_id:cfg.clientId,response_type:'code',redirect_uri:redirectUri,scope:SCOPES,code_challenge_method:'S256',code_challenge:challenge,state}).toString();
+    location.assign(u.toString());
+  }
+  async function tokenRequest(params){
+    const r=await fetch('https://accounts.spotify.com/api/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(params)});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok)throw new Error(j.error_description||j.error||('Spotify-Anmeldung fehlgeschlagen ('+r.status+')'));
+    tokens={access:j.access_token,refresh:j.refresh_token||(tokens&&tokens.refresh)||'',expires_at:Date.now()+(+j.expires_in||3600)*1000};
+    store.set('klangtisch.spotify',tokens);
+  }
+  async function handleRedirect(){
+    const p=new URLSearchParams(location.search);
+    if(!p.has('code')&&!p.has('error'))return;
+    const clean=()=>{try{history.replaceState({},'',redirectUri||location.pathname);}catch(e){}};
+    if(p.get('error')){lastError='Spotify hat die Verbindung abgelehnt: '+p.get('error');clean();return;}
+    const verifier=sess.get('klangtisch.pkce'),state=sess.get('klangtisch.state');
+    clean();
+    if(!verifier||state!==p.get('state')){lastError='Anmeldung konnte nicht abgeschlossen werden – bitte erneut verbinden.';return;}
+    try{await tokenRequest({grant_type:'authorization_code',code:p.get('code'),redirect_uri:redirectUri,client_id:cfg.clientId,code_verifier:verifier});lastError='';sess.del('klangtisch.pkce');}
+    catch(e){lastError=e.message;}
+  }
+  async function ensureToken(){
+    if(!tokens)return null;
+    if(Date.now()<tokens.expires_at-60000)return tokens.access;
+    if(!tokens.refresh)return null;
+    try{await tokenRequest({grant_type:'refresh_token',refresh_token:tokens.refresh,client_id:cfg.clientId});return tokens.access;}
+    catch(e){tokens=null;store.del('klangtisch.spotify');lastError='Spotify-Verbindung abgelaufen – bitte neu verbinden.';renderNow();return null;}
+  }
+  async function api(method,path,body,retried){
+    const t=await ensureToken();if(!t){const e=new Error('Nicht mit Spotify verbunden.');e.status=0;throw e;}
+    const r=await fetch('https://api.spotify.com/v1'+path,{method,headers:Object.assign({Authorization:'Bearer '+t},body?{'Content-Type':'application/json'}:{}),body:body?JSON.stringify(body):undefined});
+    if(r.status===401&&!retried){tokens.expires_at=0;return api(method,path,body,true);}
+    if(r.status===204)return null;
+    const text=await r.text();let j=null;try{j=text?JSON.parse(text):null;}catch(e){}
+    if(!r.ok){const e=new Error((j&&j.error&&j.error.message)||('Spotify antwortet mit Status '+r.status));e.status=r.status;e.reason=j&&j.error&&j.error.reason;throw e;}
+    return j;
+  }
+  async function listDevices(){const j=await api('GET','/me/player/devices');return (j&&j.devices)||[];}
+  async function setVolume(v,dev){await api('PUT','/me/player/volume?volume_percent='+Math.round(v)+(dev?'&device_id='+encodeURIComponent(dev):''));}
+  async function ramp(from,to,ms,dev){const steps=Math.max(2,Math.min(8,Math.round(ms/450)));for(let i=1;i<=steps;i++){try{await setVolume(from+(to-from)*i/steps,dev);}catch(e){return false;}if(i<steps)await sleep(ms/steps);}return true;}
+  async function switchConnect(o){
+    if(switching)return;switching=true;renderNow();
+    try{
+      let st=null;try{st=await api('GET','/me/player');}catch(e){}
+      if(st&&st.is_playing&&st.context&&st.context.uri===o.uri){playing=o;lastError='';return;}
+      const dev=(st&&st.device)||null;
+      let devId=cfg.deviceId||'';
+      const fade=cfg.fadeSec*1000;
+      const vol=(dev&&dev.supports_volume!==false&&typeof dev.volume_percent==='number'&&(!devId||dev.id===devId))?dev.volume_percent:null;
+      const wasPlaying=!!(st&&st.is_playing)&&(!devId||(dev&&dev.id===devId));
+      let faded=false;
+      if(wasPlaying&&vol!==null&&fade>0&&vol>0)faded=await ramp(vol,0,fade,devId);
+      const q=devId?'?device_id='+encodeURIComponent(devId):'';
+      const body={context_uri:o.uri};
+      if(cfg.shuffle)body.offset={position:Math.floor(Math.random()*20)};
+      let started=false;
+      try{await api('PUT','/me/player/play'+q,body);started=true;}
+      catch(e){
+        if(e.status===404||e.reason==='NO_ACTIVE_DEVICE'){
+          const devs=await listDevices();
+          const pick=(devId&&devs.find(d=>d.id===devId))||devs.find(d=>d.is_active)||devs[0];
+          if(!pick){const err=new Error('Kein Spotify-Gerät gefunden. Öffne Spotify auf Rechner oder Handy und versuche es erneut.');err.status=404;throw err;}
+          devId=pick.id;
+          try{await api('PUT','/me/player',{device_ids:[pick.id],play:false});}catch(e2){}
+          await sleep(900);
+          await api('PUT','/me/player/play?device_id='+encodeURIComponent(pick.id),body);started=true;
+        }else if(cfg.shuffle&&e.status>=400&&e.status<500){
+          delete body.offset;await api('PUT','/me/player/play'+q,body);started=true;
+        }else throw e;
+      }
+      if(started&&cfg.shuffle){try{await api('PUT','/me/player/shuffle?state=true'+(devId?'&device_id='+encodeURIComponent(devId):''));}catch(e){}}
+      if(faded&&vol!==null){await sleep(500);await ramp(0,vol,fade,devId);}
+      else if(vol!==null&&!faded&&wasPlaying&&fade>0){try{await setVolume(vol,devId);}catch(e){}}
+      playing=o;lastError='';ring();
+    }catch(e){lastError=e.message||'Spotify-Wechsel fehlgeschlagen.';}
+    finally{switching=false;renderNow();renderStatus();}
+  }
+  let playPoll=null;
+  async function pollPlayer(){
+    if(cfg.mode!=='connect'||!tokens||!armed)return;
+    try{
+      const st=await api('GET','/me/player');
+      if(st&&st.item){
+        const artists=(st.item.artists||[]).map(a=>a.name).join(', ');
+        el.playtext.textContent=(st.is_playing?'Spielt':'Pausiert')+(st.device?' auf „'+st.device.name+'“':'')+': '+st.item.name+(artists?' – '+artists:'');
+        el.playline.hidden=false;
+      }else{el.playtext.textContent='Spotify spielt gerade nichts.';el.playline.hidden=false;}
+    }catch(e){}
+  }
+
+  /* ---------- Player auf der Seite (Embed) ---------- */
+  let iframeApi=null,controller=null,lastPos=-1,lastUpdate=0,isPlayingNow=false,embedPaused=false;
+  window.onSpotifyIframeApiReady=function(IFrameAPI){iframeApi=IFrameAPI;if(cfg.mode==='embed')makeController();};
+  function makeController(){
+    if(controller||!iframeApi)return;
+    const first=(signal&&signal.ort)||byKey.nacht;
+    iframeApi.createController(el.embed,{uri:first.uri,width:'100%',height:352},EmbedController=>{
+      controller=EmbedController;
+      controller.addListener('playback_started',()=>{if(pending&&armed)switchEmbedNow();});
+      controller.addListener('playback_update',e=>{
+        const d=(e&&e.data)||{};const pos=+d.position||0,dur=+d.duration||0,now=Date.now();
+        const was=isPlayingNow;isPlayingNow=!d.isPaused;
+        if(isPlayingNow&&dur>0&&dur-pos<=1200&&pending&&armed)switchEmbedNow();
+        else if(pending&&armed&&(!isPlayingNow||(cfg.maxWait>0&&now-pendingSince>=cfg.maxWait*1000)))switchEmbedNow();
+        lastPos=pos;lastUpdate=now;
+        if(was!==isPlayingNow){embedPaused=!isPlayingNow;renderNow();}
+      });
+    });
+  }
+  function playEmbed(o){
+    if(!controller)return false;
+    try{controller.loadUri(o.uri);setTimeout(()=>{try{controller.play();}catch(e){}},900);}catch(e){return false;}
+    playing=o;lastPos=-1;ring();return true;
+  }
+  function switchEmbedNow(){if(!pending)return;const o=pending;pending=null;playEmbed(o);renderNow();}
+
+  /* ---------- gemeinsam ---------- */
+  function ring(){el.now.classList.remove('ring');void el.now.offsetWidth;el.now.classList.add('ring');setTimeout(()=>el.now.classList.remove('ring'),1600);}
+  function requestSwitch(o){
+    if(playing&&playing.key===o.key){pending=null;renderNow();return;}
+    if(!armed){renderNow();return;}
+    if(cfg.mode==='connect'){pending=null;switchConnect(o);return;}
+    if(cfg.switchMode==='sofort'||!isPlayingNow||(Date.now()-lastUpdate)>8000){pending=o;switchEmbedNow();return;}
+    pending=o;pendingSince=Date.now();renderNow();
+  }
+  function armConnect(){armed=true;sess.set('klangtisch.armed','1');if(!playPoll)playPoll=setInterval(pollPlayer,10000);pollPlayer();}
+  function manual(o){
+    manualUntilNext=true;pending=null;
+    if(cfg.mode==='connect'){if(!tokens){startAuth();return;}armConnect();switchConnect(o);}
+    else{if(!controller)makeController();armed=true;keepAwake(true);playEmbed(o);}
+    renderNow();
+  }
+  el.start.addEventListener('click',()=>{
+    if(cfg.mode==='connect'){
+      if(!tokens){startAuth();return;}
+      armConnect();
+      const o=(signal&&signal.ort)||null;
+      if(o)switchConnect(o);else renderNow();
+    }else{
+      if(!controller)makeController();
+      armed=true;keepAwake(true);
+      const o=(signal&&signal.ort)||byKey.nacht;pending=null;playEmbed(o);renderNow();
+    }
+  });
+  el.pause.addEventListener('click',()=>{if(!controller)return;try{controller.togglePlay();}catch(e){}});
+
+  /* ---------- Wach bleiben (nur Player auf der Seite) ---------- */
+  let wake=null;
+  function keepAwake(on){
+    try{
+      if(on){if(!wake&&navigator.wakeLock&&document.visibilityState==='visible'){navigator.wakeLock.request('screen').then(w=>{wake=w;w.addEventListener('release',()=>{wake=null;});}).catch(()=>{wake=null;});}}
+      else if(wake){const w=wake;wake=null;w.release().catch(()=>{});}
+    }catch(e){wake=null;}
+  }
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){if(armed&&cfg.mode==='embed')keepAwake(true);poll();}});
+
+  /* ---------- Signal aus GitHub ---------- */
+  function b64utf8(b){const bin=atob(String(b||'').replace(/\s/g,''));const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder('utf-8').decode(bytes);}
+  const apiUrl=()=>'https://api.github.com/repos/'+cfg.repo.replace(/^\/+|\/+$/g,'')+'/contents/'+cfg.path.replace(/^\/+/,'')+'?ref='+encodeURIComponent(cfg.branch);
+  function applySignal(data){
+    const ort=resolveOrt(data.ort);
+    const s={ort,raw:String(data.ort||''),ortname:typeof data.ortname==='string'?data.ortname:'',hinweis:typeof data.hinweis==='string'?data.hinweis:'',gesetzt:typeof data.gesetzt==='string'?data.gesetzt:''};
+    const changed=!signal||signal.gesetzt!==s.gesetzt||(signal.ort?signal.ort.key:'')!==(ort?ort.key:'')||signal.raw!==s.raw;
+    signal=s;
+    if(changed){manualUntilNext=false;if(ort)requestSwitch(ort);}
+    renderNow();
+  }
+  function schedule(ms){if(pollTimer)clearTimeout(pollTimer);pollTimer=setTimeout(poll,ms);}
+  function poll(){
+    if(polling)return;polling=true;
+    let wait=cfg.interval*1000;
+    if(Date.now()<backoffUntil){polling=false;schedule(Math.min(backoffUntil-Date.now()+500,60000));renderStatus();return;}
+    const headers={'Accept':'application/vnd.github+json'};
+    if(etag)headers['If-None-Match']=etag;
+    if(cfg.token)headers['Authorization']='Bearer '+cfg.token;
+    fetch(apiUrl(),{headers,cache:'no-store'}).then(r=>{
+      lastCheck=Date.now();
+      const remaining=+r.headers.get('X-RateLimit-Remaining'),reset=+r.headers.get('X-RateLimit-Reset');
+      if(!isNaN(remaining)&&remaining>=0&&remaining<20&&reset>0){const perReq=Math.max(0,reset*1000-Date.now())/Math.max(1,remaining);wait=Math.max(wait,Math.ceil(perReq*1.15));}
+      if(r.status===304){if(lastError.indexOf('GitHub')===0||lastError.indexOf('Keine Verbindung')===0||lastError.indexOf('Datei')===0)lastError='';return null;}
+      if(r.status===200){if(lastError.indexOf('GitHub')===0||lastError.indexOf('Keine Verbindung')===0||lastError.indexOf('Datei')===0)lastError='';const e=r.headers.get('ETag');if(e)etag=e;return r.json();}
+      if(r.status===403||r.status===429){const until=reset>0?reset*1000:Date.now()+60000;backoffUntil=Math.max(until,Date.now()+30000);lastError='GitHub bremst die Abfragen – weiter '+relTime(new Date(backoffUntil).toISOString()).replace('vor ','in ')+'.';return null;}
+      if(r.status===404){lastError='Datei oder Repository nicht gefunden: '+cfg.repo+' / '+cfg.path;return null;}
+      if(r.status===401){lastError='GitHub-Token ungültig.';return null;}
+      lastError='GitHub antwortet mit Status '+r.status+'.';return null;
+    }).then(body=>{
+      if(body&&body.content){let data=null;try{data=JSON.parse(b64utf8(body.content));}catch(e){lastError='klang.json ist kein gültiges JSON.';}if(data&&typeof data==='object')applySignal(data);}
+    }).catch(()=>{lastError='Keine Verbindung zu GitHub.';}).then(()=>{polling=false;renderStatus();schedule(wait);});
+  }
+
+  /* ---------- Formular ---------- */
+  function fillDevices(devs){
+    const sel=el.device;sel.innerHTML='';
+    const o0=document.createElement('option');o0.value='';o0.textContent='Automatisch (aktives Gerät)';sel.appendChild(o0);
+    (devs||[]).forEach(d=>{const o=document.createElement('option');o.value=d.id;o.textContent=d.name+(d.is_active?' (aktiv)':'')+' · '+d.type;sel.appendChild(o);});
+    if(cfg.deviceId&&!(devs||[]).some(d=>d.id===cfg.deviceId)){const o=document.createElement('option');o.value=cfg.deviceId;o.textContent=(cfg.deviceName||'Gespeichertes Gerät')+' (gerade nicht erreichbar)';sel.appendChild(o);}
+    sel.value=cfg.deviceId||'';
+  }
+  function fillForm(){
+    $('mode-connect').checked=cfg.mode==='connect';$('mode-embed').checked=cfg.mode==='embed';
+    $('cfg-clientid').value=cfg.clientId;$('cfg-fade').value=cfg.fadeSec;$('cfg-shuffle').value=cfg.shuffle?'1':'0';$('cfg-switch').value=cfg.switchMode;$('cfg-maxwait').value=cfg.maxWait;
+    $('cfg-repo').value=cfg.repo;$('cfg-branch').value=cfg.branch;$('cfg-path').value=cfg.path;$('cfg-interval').value=cfg.interval;$('cfg-token').value=cfg.token;
+    fillDevices([]);renderGm();
+    $('redirect-uri').textContent=redirectUri||'(nur über https verfügbar)';
+  }
+  function renderGm(){
+    $('gm-repo').textContent=cfg.repo;$('gm-path').textContent=cfg.path;
+    const r=cfg.repo,p=cfg.path;
+    $('gm-cmd').textContent='gh api -X PUT repos/'+r+'/contents/'+p+' \\\n  -f branch="'+cfg.branch+'" \\\n  -f message="Klang: Hafenstadt" \\\n  -f content="$(printf \'%s\' \'{"ort":"hafenstadt","ortname":"Monmurg","hinweis":"Die Werft hämmert bis in die Nacht.","gesetzt":"\'"$(date -u +%FT%TZ)"\'"}\' | base64 -w0)" \\\n  -f sha="$(gh api repos/'+r+'/contents/'+p+'?ref='+cfg.branch+' --jq .sha)"';
+  }
+  $('cfg-form').addEventListener('submit',ev=>{
+    ev.preventDefault();
+    const newMode=$('mode-embed').checked?'embed':'connect';
+    cfg.mode=newMode;cfg.clientId=$('cfg-clientid').value.trim();cfg.deviceId=el.device.value;cfg.deviceName=el.device.value?(el.device.options[el.device.selectedIndex].textContent.replace(/ \(aktiv\)| \(gerade nicht erreichbar\)/g,'')):'';
+    cfg.fadeSec=Math.min(20,Math.max(0,+$('cfg-fade').value||0));cfg.shuffle=$('cfg-shuffle').value==='1';cfg.switchMode=$('cfg-switch').value==='sofort'?'sofort':'ende';cfg.maxWait=Math.min(600,Math.max(0,+$('cfg-maxwait').value||0));
+    cfg.repo=$('cfg-repo').value.trim()||DEFAULTS.repo;cfg.branch=$('cfg-branch').value.trim()||DEFAULTS.branch;cfg.path=$('cfg-path').value.trim()||DEFAULTS.path;
+    cfg.interval=Math.min(600,Math.max(5,+$('cfg-interval').value||15));cfg.token=$('cfg-token').value.trim();
+    saveCfg();etag=null;backoffUntil=0;lastError='';renderGm();
+    if(cfg.mode==='embed'&&!controller)makeController();
+    if(cfg.mode==='connect'&&armed&&!tokens){armed=false;sess.del('klangtisch.armed');}
+    el.cfgNote.textContent='Gespeichert.';setTimeout(()=>{el.cfgNote.textContent='';},2500);
+    renderNow();poll();
+  });
+  $('cfg-check').addEventListener('click',()=>{etag=null;backoffUntil=0;lastError='';poll();});
+  $('dev-load').addEventListener('click',async()=>{
+    if(!tokens){el.cfgNote.textContent='Zuerst mit Spotify verbinden.';return;}
+    try{const devs=await listDevices();fillDevices(devs);el.cfgNote.textContent=devs.length?devs.length+' Gerät(e) gefunden.':'Kein Gerät gefunden – Spotify auf Rechner oder Handy öffnen.';}
+    catch(e){el.cfgNote.textContent=e.message;}
+  });
+  $('spotify-logout').addEventListener('click',()=>{tokens=null;store.del('klangtisch.spotify');armed=false;sess.del('klangtisch.armed');el.playline.hidden=true;el.cfgNote.textContent='Spotify-Verbindung gelöst.';renderNow();});
+  $('copy-uri').addEventListener('click',()=>{
+    const t=redirectUri;if(!t)return;
+    const done=()=>{el.setupNote.textContent='Adresse kopiert.';setTimeout(()=>{el.setupNote.textContent='';},2000);};
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done).catch(()=>{selectUri();});}else{selectUri();}
+    function selectUri(){const r=document.createRange();r.selectNodeContents($('redirect-uri'));const s=window.getSelection();s.removeAllRanges();s.addRange(r);}
+  });
+
+  /* ---------- Start ---------- */
+  (async()=>{
+    fillForm();
+    await handleRedirect();
+    if(cfg.mode==='connect'&&tokens&&sess.get('klangtisch.armed')==='1')armConnect();
+    renderNow();renderStatus();poll();
+  })();
+})();
+</script>
+</body>
+</html>
