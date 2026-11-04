@@ -11,7 +11,7 @@ Musik für das Textabenteuer **Wegwart der Seeprinzen**, die von selbst wechselt
 | Musik kommt aus | deiner Spotify-App | deiner Spotify-App | dem Browser |
 | Braucht | Spotify Premium, Spotify-App, Schlüssel in GitHub | Spotify Premium, Spotify-App | Spotify-Anmeldung im Player |
 
-Die Automatik schaltet **nur, solange in Spotify gerade eine der neun Orts-Playlists spielt**. Pause, Podcast, eigene Musik und „kein Gerät aktiv“ lässt sie in Ruhe, das Spiel startet also nie von selbst Musik. Zum Starten tippst du einmal auf den 🎶-Verweis im Spiel oder auf „In Spotify öffnen“ auf der [Seite](https://maxwellsilverhammer-mk.github.io/wegwart-klang/) und drückst Play.
+Die Automatik schaltet **nur, solange in Spotify gerade eine der neun Orts-Playlists spielt**. Pause, Podcast, eigene Musik und „kein Gerät aktiv“ lässt sie in Ruhe, das Spiel startet also nie von selbst Musik. Sie startet die neue Liste an einer zufälligen Stelle und ändert weder Shuffle noch Repeat, denn beides bliebe am Gerät auch für die eigene Musik an. Überblendet wird nur, wo das Gerät seine Lautstärke steuern lässt; am Handy schaltet sie hart um (Probelauf am Pixel 8, 4.11.2026). Zum Starten tippst du einmal auf den 🎶-Verweis im Spiel oder auf „In Spotify öffnen“ auf der [Seite](https://maxwellsilverhammer-mk.github.io/wegwart-klang/) und drückst Play.
 
 ## Einrichtung
 

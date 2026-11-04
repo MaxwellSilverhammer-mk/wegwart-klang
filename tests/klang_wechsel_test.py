@@ -43,15 +43,14 @@ class Spotify:
             if self.volume_fehler:
                 return 403, b'{"error":{"status":403,"message":"nein","reason":"VOLUME_CONTROL_DISALLOW"}}', {}
             return 204, b"", {}
-        if pfad.startswith("/me/player/shuffle"):
-            # So antwortet das echte Spotify: 200 mit einem Text, der kein JSON ist (Probelauf 4.11.2026).
-            return 200, b"f3a9c1", {}
         if pfad.startswith("/me/player/play"):
             if self.play_antworten:
                 return self.play_antworten.pop(0)
             if self.stand:
                 self.stand["context"] = {"uri": json.loads(daten)["context_uri"]}
-            return 204, b"", {}
+            # So antwortet das echte Spotify gelegentlich: 200 mit einem Text, der kein JSON ist
+            # (Probelauf 4.11.2026, beim Shuffle-Befehl).
+            return 200, b"f3a9c1", {}
         raise AssertionError("unerwartet: %s %s" % (methode, adresse))
 
     def befehle(self, teil):
@@ -95,7 +94,8 @@ class Wechseln(unittest.TestCase):
         werte = s.lautstaerken()
         self.assertEqual(werte[kw.BLENDE_STUFEN - 1], 0)
         self.assertEqual(werte[-1], 70)
-        self.assertEqual(len(s.befehle("/me/player/shuffle")), 1)
+        self.assertEqual(s.befehle("/me/player/shuffle"), [], "Shuffle bliebe für die eigene Musik an")
+        self.assertEqual(s.befehle("/me/player/repeat"), [], "Repeat bliebe für die eigene Musik an")
         play = s.befehle("/me/player/play")[0]
         self.assertIn("device_id=geraet1", play[1])
 
@@ -141,13 +141,13 @@ class Wechseln(unittest.TestCase):
 
     def test_geraet_ohne_lautstaerke_schaltet_hart(self):
         s = Spotify(stand(stellbar=False))
-        self.assertIn("ohne Überblendung", self.lauf(s))
+        self.assertIn("lässt seine Lautstärke nicht steuern", self.lauf(s))
         self.assertEqual(s.lautstaerken(), [])
         self.assertEqual(s.stand["context"]["uri"], NEU)
 
     def test_lautstaerke_abgelehnt_schaltet_trotzdem(self):
         s = Spotify(stand(), volume_fehler=True)
-        self.assertIn("ohne Überblendung", self.lauf(s))
+        self.assertIn("lehnt die Lautstärke", self.lauf(s))
         self.assertEqual(s.stand["context"]["uri"], NEU)
 
     def test_nach_fehlschlag_nie_stumm(self):

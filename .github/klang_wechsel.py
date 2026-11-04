@@ -153,10 +153,8 @@ def spielen(token, ziel, geraet_id):
         if fehler.grund == "PREMIUM_REQUIRED" or not 400 <= fehler.status < 500:
             raise
         api(token, "PUT", "/me/player/play" + anhang, {"context_uri": ziel})
-    try:
-        api(token, "PUT", "/me/player/shuffle?state=true" + geraet_anhang(geraet_id, "&"))
-    except SpotifyFehler:
-        pass  # Die Musik läuft, nur eben der Reihe nach.
+    # Kein Shuffle und kein Repeat: Beides bliebe am Gerät auch für die eigene Musik des Spielers an.
+    # Für Abwechslung reicht der zufällige Startpunkt.
 
 
 def wechseln(token, ziel, orts_playlists):
@@ -175,13 +173,20 @@ def wechseln(token, ziel, orts_playlists):
     geraet = stand.get("device") or {}
     geraet_id = geraet.get("id") or ""
     lautstaerke = geraet.get("volume_percent")
-    if geraet.get("supports_volume") is False or not lautstaerke:
+    grund = ""
+    if geraet.get("supports_volume") is False:
+        grund = "das Gerät lässt seine Lautstärke nicht steuern"
+        lautstaerke = None
+    elif not lautstaerke:
+        grund = "das Gerät meldet keine Lautstärke"
         lautstaerke = None
 
     abgeblendet = False
     try:
         if lautstaerke is not None:
             abgeblendet = blende(token, lautstaerke, 0, geraet_id)
+            if not abgeblendet:
+                grund = "Spotify lehnt die Lautstärke für dieses Gerät ab"
         spielen(token, ziel, geraet_id)
         if abgeblendet:
             time.sleep(0.5)
@@ -199,7 +204,7 @@ def wechseln(token, ziel, orts_playlists):
                 )
             except SpotifyFehler:
                 pass
-    return "Umgeschaltet" + (" mit Überblendung." if abgeblendet else " ohne Überblendung.")
+    return "Umgeschaltet mit Überblendung." if abgeblendet else "Umgeschaltet ohne Überblendung: %s." % grund
 
 
 def main():
