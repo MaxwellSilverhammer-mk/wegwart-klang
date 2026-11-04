@@ -214,15 +214,15 @@ body:not([data-mode="auto"]) .only-auto{display:none !important}
   'use strict';
   /* ---------- Orte ---------- */
   const ORTE=[
-    {key:'hafenstadt',name:'Hafenstadt',line:'Kai, Markt und Werft. Laute und Fiedel über dem Stimmengewirr, Taue knarren.',id:'1Q9vuWX2ZPdlboRkJ5Main'},
-    {key:'dorf',name:'Dorf und Weiler',line:'Höfe, Felder, ein Kirchlein. Harfe und Flöte, warm und bodenständig.',id:'2v5wdl16NZyXphIcRgElhY'},
-    {key:'landstrasse',name:'Landstraße',line:'Zu Fuß über Hügelwege. Gitarre und Hackbrett im Schritttempo, weite Landschaft.',id:'0lTG22AtUavg5kJ5tiizAv'},
-    {key:'kueste',name:'Küste und See',line:'Klippen, Strand, offenes Wasser. Harfe und Cello im Seewind.',id:'3ewlbzWlaVfNhJ8RkkUuIF'},
-    {key:'wald',name:'Wald und Hain',line:'Moos und Dämmerlicht. Holzflöte und Streicher, ferne Vogelstimmen.',id:'602nYr5A65NHe1vjKP3yWf'},
-    {key:'sumpf',name:'Sumpf und Moor',line:'Nebel über stillem Wasser. Tiefe Drones, einzelne Flötentöne.',id:'55Rbwla0LxYEeokLQdc2HR'},
-    {key:'nacht',name:'Nacht und Rast',line:'Kleines Feuer, Sternenhimmel, Grillen. Zarte Harfe, lange Töne.',id:'6vdRpIUlczZz9Af3pdPzXi'},
-    {key:'schenke',name:'Schenke und Herberge',line:'Kaminfeuer und Krüge. Laute, Drehleier und Fiedel, lebhaft bis gemütlich.',id:'3LvoMjqJm7OBGsYeDKIMT2'},
-    {key:'ruinen',name:'Ruinen und Unterwelt',line:'Gewölbe, Tropfen, Hall. Tiefe Streicher, Glocken- und Metallklänge.',id:'54VMiUl0OflGJOSKSTAVXk'}
+    {key:'hafenstadt',name:'Hafenstadt',line:'Kai, Markt und Werft. Laute und Fiedel über dem Stimmengewirr, Taue knarren.',id:'0XsmPTo6kyzDYOwH6YwFvS'},
+    {key:'dorf',name:'Dorf und Weiler',line:'Höfe, Felder, ein Kirchlein. Harfe und Flöte, warm und bodenständig.',id:'2vfgijSPhFjAvFzlQXSUXo'},
+    {key:'landstrasse',name:'Landstraße',line:'Zu Fuß über Hügelwege. Gitarre und Hackbrett im Schritttempo, weite Landschaft.',id:'4XX3hKNLCVNw9hws585zNj'},
+    {key:'kueste',name:'Küste und See',line:'Klippen, Strand, offenes Wasser. Harfe und Cello im Seewind.',id:'2SZDDPdYFD3RMR2kN9d52d'},
+    {key:'wald',name:'Wald und Hain',line:'Moos und Dämmerlicht. Holzflöte und Streicher, ferne Vogelstimmen.',id:'66oiEvQ52UuGywevVSlxu0'},
+    {key:'sumpf',name:'Sumpf und Moor',line:'Nebel über stillem Wasser. Tiefe Drones, einzelne Flötentöne.',id:'1ysbfc3RhWi83j9sMgsYXk'},
+    {key:'nacht',name:'Nacht und Rast',line:'Kleines Feuer, Sternenhimmel, Grillen. Zarte Harfe, lange Töne.',id:'3vBpGHXB6xlEvYLRgGnB7N'},
+    {key:'schenke',name:'Schenke und Herberge',line:'Kaminfeuer und Krüge. Laute, Drehleier und Fiedel, lebhaft bis gemütlich.',id:'08xYo8NPki0v4gvYsSzRCT'},
+    {key:'ruinen',name:'Ruinen und Unterwelt',line:'Gewölbe, Tropfen, Hall. Tiefe Streicher, Glocken- und Metallklänge.',id:'0spJosgXkNL8LrfjOsCQZH'}
   ];
   const byKey={};ORTE.forEach(o=>{o.uri='spotify:playlist:'+o.id;byKey[o.key]=o;});
   const spotifyUrl=o=>'https://open.spotify.com/playlist/'+o.id;

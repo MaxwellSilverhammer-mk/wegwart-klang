@@ -54,13 +54,15 @@ git clone -q --depth 1 -b main https://github.com/MaxwellSilverhammer-mk/wegwart
 /home/claude/wegwart-klang/setze-ort.sh hafenstadt "Monmurg" "Die Werft hämmert bis in die Nacht."
 ```
 
-Das Skript holt den aktuellen Stand, schreibt `klang.json`, erzeugt einen Commit „Klang: …“ und schiebt ihn. (Die GitHub-API lässt sich aus Claude-Sitzungen nur lesen, nicht schreiben; deshalb der Weg über git.) Ist der letzte Lauf der Automatik fehlgeschlagen, meldet es das mit „ACHTUNG“; das sagt die Spielleitung dem Spieler in einem Satz in Klammern. Das Repository ist öffentlich: In `ortname` und `hinweis` steht nur, was die Figur weiß.
+Das Skript holt den aktuellen Stand, schreibt `klang.json`, erzeugt einen Commit „Klang: …“, schiebt ihn und nennt den Verweis auf die Playlist für die Klangzeile. (Die GitHub-API lässt sich aus Claude-Sitzungen nur lesen, nicht schreiben; deshalb der Weg über git.) Ist der letzte Lauf der Automatik fehlgeschlagen, meldet es das mit „ACHTUNG“; das sagt die Spielleitung dem Spieler in einem Satz in Klammern. Das Repository ist öffentlich: In `ortname` und `hinweis` steht nur, was die Figur weiß.
 
 Regel: nur beim 🧭 setzen, und nur, wenn sich der Ortstyp ändert. Innerhalb eines Ortes bleibt die Musik, auch im Kampf.
 
 ## Orts-Playlists
 
-Die neun Playlists (je 150 Minuten, instrumental, Klangteppich ohne Spitzen) liegen im Spotify-Konto des Weltenhüters; ihre Kennungen stehen nur in `index.html`, die Automatik liest sie von dort.
+Die neun Playlists (je 150 Minuten, instrumental, Klangteppich ohne Spitzen) liegen im Spotify-Konto des Weltenhüters; ihre Kennungen stehen nur in `index.html`, Automatik und `setze-ort.sh` lesen sie von dort. Eine Playlist auswechseln heißt also: nur die Zeile in `index.html` ändern.
+
+Wer eine Liste vom Spotify-Konnektor erzeugen lässt, speichert sie sofort in der Bibliothek (`save_to_library`). Ungespeichert sind erzeugte Listen nicht von Dauer: Die erste Fassung der neun war nach wenigen Tagen weg.
 
 ## Was wo liegt
 

@@ -36,7 +36,9 @@ PY
 
   git -c user.name="Spielleitung" -c user.email="spielleitung@wegwart.local" commit -q -m "Klang: $ORT${ORTNAME:+ ($ORTNAME)}" -- "$DATEI"
   if git push -q origin "$BRANCH"; then
-    echo "Klang gesetzt: $ORT${ORTNAME:+ – $ORTNAME}"
+    # Die Playlists stehen nur in index.html; die Klangzeile nimmt ihren Verweis von hier.
+    PLAYLIST="$(sed -n "s/.*{key:'$ORT',.*id:'\([A-Za-z0-9]*\)'}.*/\1/p" index.html)"
+    echo "Klang gesetzt: $ORT${ORTNAME:+ – $ORTNAME} · https://open.spotify.com/playlist/$PLAYLIST"
     # Ging der letzte Lauf der Automatik schief (etwa ein abgelaufener Schlüssel), soll die Spielleitung es sagen.
     REPO="$(git remote get-url origin | sed -E 's#^.*github\.com[/:]##; s#\.git$##')"
     curl -fsS --max-time 8 "https://api.github.com/repos/$REPO/actions/workflows/klang.yml/runs?per_page=1&status=completed" 2>/dev/null | python3 -c '

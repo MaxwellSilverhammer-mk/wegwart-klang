@@ -86,7 +86,8 @@ async function dienste(context, { signal, ratelimit = { limit: 5000, remaining: 
 }
 
 const SIGNAL = (ort, nr = 1) => ({ ort, ortname: 'Ort ' + nr, hinweis: 'Hinweis ' + nr, gesetzt: '2026-11-04T10:00:0' + nr + 'Z' });
-const URI = { wald: 'spotify:playlist:602nYr5A65NHe1vjKP3yWf', sumpf: 'spotify:playlist:55Rbwla0LxYEeokLQdc2HR', dorf: 'spotify:playlist:2v5wdl16NZyXphIcRgElhY', nacht: 'spotify:playlist:6vdRpIUlczZz9Af3pdPzXi' };
+const URI = {};
+for (const m of HTML.matchAll(/\{key:'(\w+)',name:'[^']*',line:'[^']*',id:'(\w+)'\}/g)) URI[m[1]] = 'spotify:playlist:' + m[2];
 
 (async () => {
   await new Promise(r => server.listen(0, '127.0.0.1', r));
@@ -105,7 +106,7 @@ const URI = { wald: 'spotify:playlist:602nYr5A65NHe1vjKP3yWf', sumpf: 'spotify:p
     await page.goto(SEITE);
     await page.waitForFunction(() => document.getElementById('now-name').textContent === 'Wald und Hain');
     pruefe(await page.locator('#open-now').isVisible(), 'A: Knopf „In Spotify öffnen“ sichtbar');
-    pruefe((await page.locator('#open-now').getAttribute('href')).endsWith('602nYr5A65NHe1vjKP3yWf'), 'A: Knopf zeigt auf die Playlist des Ortes');
+    pruefe((await page.locator('#open-now').getAttribute('href')).endsWith(URI.wald.split(':')[2]), 'A: Knopf zeigt auf die Playlist des Ortes');
     pruefe(!(await page.locator('#start').isVisible()), 'A: kein Start- und kein Verbinden-Knopf');
     pruefe(!(await page.locator('#setup').isVisible()), 'A: mit Client-ID keine Karte „Spotify-App anlegen“');
     pruefe(await page.locator('a.ort-play:visible').count() === 9 && await page.locator('button.ort-play:visible').count() === 0, 'A: Liste mit neun Öffnen-Verweisen');
