@@ -22,7 +22,7 @@ Die Automatik schaltet **nur, solange in Spotify gerade eine der neun Orts-Playl
 
 Fertig; die Seite muss danach nicht mehr offen sein.
 
-**Der Schlüssel läuft nach sechs Monaten ab** (Spotify-Regel seit 2026: Die Frist beginnt bei der Zustimmung, und auch ständige Benutzung verlängert sie nicht). Dann schlägt der nächste Lauf fehl, GitHub schickt eine Mail, und `setze-ort.sh` sagt es der Spielleitung beim nächsten Ort. Die Schritte 3 und 4 wiederholen und das Secret überschreiben, das dauert zwei Minuten.
+**Der Schlüssel läuft nach sechs Monaten ab** (Spotify-Regel seit 2026: Die Frist beginnt bei der Zustimmung, und auch ständige Benutzung verlängert sie nicht). Dann schlägt der nächste Lauf fehl, GitHub schickt eine Mail, und `setze-ort.sh` sagt es der Spielleitung beim nächsten Ort. Die Schritte 3 und 4 wiederholen und das Secret überschreiben, das dauert zwei Minuten. Der jetzige Schlüssel entstand am 4.11.2026 und läuft um den 3.5.2027 ab.
 
 **Was der Schlüssel darf:** nur die Wiedergabe lesen und steuern (`user-read-playback-state`, `user-modify-playback-state`), nicht an Playlists oder Kontodaten. Das Secret bleibt verschlossen, auch wenn das Repository öffentlich ist: Das Protokoll maskiert es, und Pull Requests von Fremden lösen die Automatik nicht aus. Das Protokoll eines Laufs (*Actions → Klang*) nennt nur den Ortstyp und was geschah.
 
