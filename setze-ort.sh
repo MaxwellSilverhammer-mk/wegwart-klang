@@ -19,10 +19,12 @@ cd "$(dirname "$0")"
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 
 # Immer vom aktuellen Stand ausgehen; geändert wird hier nur die Signaldatei.
-git fetch -q origin "$BRANCH"
-git reset -q --hard "origin/$BRANCH"
+# Schlägt das Schieben fehl (eine andere Sitzung war schneller, Netz), noch einmal von vorn.
+for VERSUCH in 1 2 3; do
+  git fetch -q origin "$BRANCH"
+  git reset -q --hard "origin/$BRANCH"
 
-ORT="$ORT" ORTNAME="$ORTNAME" HINWEIS="$HINWEIS" python3 - > "$DATEI" <<'PY'
+  ORT="$ORT" ORTNAME="$ORTNAME" HINWEIS="$HINWEIS" python3 - > "$DATEI" <<'PY'
 import json, os, datetime
 print(json.dumps({
     "ort": os.environ["ORT"],
@@ -32,6 +34,12 @@ print(json.dumps({
 }, ensure_ascii=False, indent=2))
 PY
 
-git -c user.name="Spielleitung" -c user.email="spielleitung@wegwart.local" commit -q -m "Klang: $ORT${ORTNAME:+ ($ORTNAME)}" -- "$DATEI"
-git push -q origin "$BRANCH"
-echo "Klang gesetzt: $ORT${ORTNAME:+ – $ORTNAME}"
+  git -c user.name="Spielleitung" -c user.email="spielleitung@wegwart.local" commit -q -m "Klang: $ORT${ORTNAME:+ ($ORTNAME)}" -- "$DATEI"
+  if git push -q origin "$BRANCH"; then
+    echo "Klang gesetzt: $ORT${ORTNAME:+ – $ORTNAME}"
+    exit 0
+  fi
+  sleep 2
+done
+echo "Klang konnte nicht gesetzt werden: Schieben dreimal fehlgeschlagen." >&2
+exit 1

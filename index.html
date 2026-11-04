@@ -6,7 +6,7 @@
 <title>Klangtisch · Live</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Alegreya:ital,wght@0,400;0,600;1,400&family=Alegreya+Sans:wght@400;600&display=swap">
 <style>
-/* Layout: eine Spalte – Kopf mit Statuszeile, großer Ortsblock mit Startknopf, darunter je nach Modus die Spotify-Einrichtung oder der eingebettete Player, dann die neun Ortstypen zum Umschalten von Hand, zuletzt Einstellungen und ein Abschnitt für die Spielleitung. */
+/* Layout: eine Spalte – Kopf mit Statuszeile, großer Ortsblock mit Startknopf, darunter je nach Modus die Spotify-Einrichtung oder der eingebettete Player, dann die neun Ortstypen zum Umschalten von Hand, zuletzt die Einrichtung der Automatik, Einstellungen und ein Abschnitt für die Spielleitung. */
 :root{
   --bg:#e6ebed; --paper:#f4f7f8; --fg:#17232b; --muted:#5a6a73; --line:#c5cfd4;
   --accent:#8a6a24; --accent-text:#6c5318; --accent-ink:#faf5e8; --glow:rgba(176,138,60,.35);
@@ -40,7 +40,7 @@ h1 .live{font-family:var(--font-ui);font-size:.8rem;letter-spacing:.14em;text-tr
 h3{font-size:1.25rem}
 .eyebrow{font-family:var(--font-ui);font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 .35rem}
 .top{display:flex;flex-direction:column;gap:8px}
-.statusline{font-family:var(--font-ui);font-size:.92rem;color:var(--muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
+.statusline{font-family:var(--font-ui);font-size:.92rem;color:var(--muted);display:flex;align-items:baseline;gap:8px;font-variant-numeric:tabular-nums}
 .lamp{width:10px;height:10px;border-radius:50%;background:var(--muted);flex:none}
 .lamp.ok{background:var(--ok)}.lamp.warn{background:var(--warn)}.lamp.bad{background:var(--bad)}
 .card{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:22px 20px 18px;display:flex;flex-direction:column;gap:10px}
@@ -50,7 +50,7 @@ h3{font-size:1.25rem}
 .now-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:6px}
 .btn{font-family:var(--font-ui);font-weight:600;font-size:1.05rem;color:var(--accent-ink);background:var(--accent);border:0;padding:12px 20px;border-radius:6px;cursor:pointer;text-decoration:none;display:inline-block}
 .btn[disabled]{opacity:.55;cursor:default}
-.btn-ghost{font-family:var(--font-ui);font-weight:600;font-size:.95rem;color:var(--accent-text);background:transparent;border:1px solid var(--line);padding:9px 14px;border-radius:999px;cursor:pointer}
+.btn-ghost{font-family:var(--font-ui);font-weight:600;font-size:.95rem;color:var(--accent-text);background:transparent;border:1px solid var(--line);padding:9px 14px;border-radius:999px;cursor:pointer;text-decoration:none;display:inline-block}
 .note{font-family:var(--font-ui);font-size:.9rem;color:var(--muted);margin:0;font-variant-numeric:tabular-nums}
 .card.ring{animation:ring 1.4s ease-out 1}
 @keyframes ring{0%{box-shadow:0 0 0 0 var(--glow)}100%{box-shadow:0 0 0 22px transparent}}
@@ -70,7 +70,7 @@ h3{font-size:1.25rem}
 .ort-name{font-family:var(--font-display);font-size:1.3rem;line-height:1.15}
 .ort.active .ort-name{color:var(--accent-text)}
 .ort-line{font-size:.95rem;color:var(--muted)}
-.ort-play{font-family:var(--font-ui);font-size:.9rem;font-weight:600;color:var(--accent-text);background:transparent;border:1px solid var(--line);border-radius:999px;padding:6px 12px;white-space:nowrap;cursor:pointer}
+.ort-play{font-family:var(--font-ui);font-size:.9rem;font-weight:600;color:var(--accent-text);background:transparent;border:1px solid var(--line);border-radius:999px;padding:6px 12px;white-space:nowrap;cursor:pointer;text-decoration:none;display:inline-block}
 details{border-top:1px solid var(--line);padding-top:14px;font-size:.95rem}
 summary{font-family:var(--font-ui);font-weight:600;cursor:pointer;color:var(--muted)}
 details p,details ul{margin:.6rem 0}
@@ -89,6 +89,13 @@ pre{background:var(--paper);border:1px solid var(--line);border-radius:6px;paddi
 .sec-title{grid-column:1 / -1;font-family:var(--font-ui);font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:6px 0 -4px}
 button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 [hidden]{display:none !important}
+body[data-mode="auto"] .only-page{display:none !important}
+body:not([data-mode="auto"]) .only-auto{display:none !important}
+.steps{margin:.6rem 0;padding-left:1.3rem}
+.steps li{margin:.8rem 0}
+.steps .field{margin-bottom:8px}
+.steps input{font:inherit;font-family:var(--font-ui);font-size:.95rem;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--fg);min-width:0;width:100%}
+.steps textarea{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:.8rem;width:100%;min-height:5em;margin-top:8px;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--fg)}
 @media (max-width:520px){.form{grid-template-columns:1fr}}
 @media (prefers-reduced-motion: reduce){.card.ring{animation:none;box-shadow:0 0 0 3px var(--glow)}}
 </style>
@@ -110,21 +117,23 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
     <p class="now-line" id="now-line">Sobald die Spielleitung beim 🧭 einen Ort setzt, wechselt die Musik von selbst.</p>
     <p class="now-hint" id="now-hint" hidden></p>
     <div class="now-actions">
-      <button class="btn" id="start" type="button">Klangtisch starten</button>
+      <a class="btn only-auto" id="open-now" target="_blank" rel="noopener" href="https://open.spotify.com" hidden>In Spotify öffnen</a>
+      <button class="btn only-page" id="start" type="button">Klangtisch starten</button>
       <button class="btn-ghost" id="pause" type="button" hidden>Pause</button>
       <p class="note" id="switch-note"></p>
     </div>
   </section>
 
   <section class="card setup" id="setup" hidden>
-    <h3>Spotify-App verbinden</h3>
-    <p>Der Klangtisch steuert dann deine Spotify-App auf Rechner oder Handy, mit Überblendung beim Wechsel. Einmalige Einrichtung:</p>
+    <h3>Spotify-App anlegen</h3>
+    <p>Damit der Klangtisch deine Spotify-App auf Rechner oder Handy steuern darf, mit Überblendung beim Wechsel. Einmalige Einrichtung:</p>
     <ol>
       <li>Auf <a href="https://developer.spotify.com/dashboard" target="_blank" rel="noopener">developer.spotify.com/dashboard</a> eine App anlegen (Name frei, etwa „Klangtisch“, API: Web API).</li>
       <li>Als Redirect URI genau diese Adresse eintragen:
         <div class="copyrow"><code id="redirect-uri"></code><button class="btn-ghost" type="button" id="copy-uri">Kopieren</button></div></li>
       <li>Die Client-ID der App unten in den Einstellungen eintragen und speichern.</li>
-      <li>Dann hier „Mit Spotify verbinden“ drücken. Spotify muss auf dem Gerät geöffnet sein, auf dem gespielt werden soll.</li>
+      <li class="only-page">Dann hier „Mit Spotify verbinden“ drücken. Spotify muss auf dem Gerät geöffnet sein, auf dem gespielt werden soll.</li>
+      <li class="only-auto">Dann unten „Automatik einrichten“ aufklappen.</li>
     </ol>
     <p class="note" id="setup-note"></p>
   </section>
@@ -136,12 +145,32 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
     <ol class="orte" id="orte"></ol>
   </section>
 
+  <details id="auto" class="only-auto">
+    <summary>Automatik einrichten</summary>
+    <p>Einmalig. Danach schaltet GitHub deine Spotify-App um, sobald das Spiel einen neuen Ortstyp setzt, auch wenn diese Seite zu ist. Sie schaltet nur, solange in Spotify gerade eine Orts-Playlist spielt: Pause, Podcast oder eigene Musik lässt sie in Ruhe.</p>
+    <ol class="steps">
+      <li><button class="btn-ghost" type="button" id="auto-consent">Bei Spotify zustimmen</button> <span class="note" id="auto-consent-note"></span></li>
+      <li id="auto-step-secret" hidden>
+        <div class="field"><label for="auto-secret">Client-Secret deiner Spotify-App (Dashboard → Settings → View client secret)</label><input id="auto-secret" type="password" autocomplete="off" spellcheck="false"></div>
+        <button class="btn-ghost" type="button" id="auto-make">Schlüssel erzeugen</button>
+      </li>
+      <li id="auto-step-key" hidden>
+        <p>Der Schlüssel liegt nur in diesem Fenster und wird nirgends gespeichert.</p>
+        <div class="copyrow"><button class="btn-ghost" type="button" id="auto-copy">Schlüssel kopieren</button><a class="btn-ghost" id="auto-github" target="_blank" rel="noopener" href="https://github.com">In GitHub ablegen</a></div>
+        <textarea id="auto-key" readonly aria-label="Schlüssel für GitHub" hidden></textarea>
+        <p>Dort als Name <code>KLANG_SPOTIFY</code> eintragen, als Wert den Schlüssel einfügen und „Add secret“ drücken.</p>
+      </li>
+    </ol>
+    <p class="note" id="auto-note"></p>
+  </details>
+
   <details id="settings">
     <summary>Einstellungen</summary>
     <form class="form" id="cfg-form">
       <p class="sec-title">Wiedergabe</p>
       <div class="full radios">
-        <label><input type="radio" name="mode" value="connect" id="mode-connect"> Spotify-App steuern (empfohlen)</label>
+        <label><input type="radio" name="mode" value="auto" id="mode-auto"> GitHub-Automatik (empfohlen, Seite darf zu sein)</label>
+        <label><input type="radio" name="mode" value="connect" id="mode-connect"> Diese Seite steuert Spotify (muss offen bleiben)</label>
         <label><input type="radio" name="mode" value="embed" id="mode-embed"> Player hier auf der Seite</label>
       </div>
       <div class="field"><label for="cfg-clientid">Spotify Client-ID (für die App-Steuerung)</label><input id="cfg-clientid" type="text" autocomplete="off" spellcheck="false"></div>
@@ -155,7 +184,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <div class="field full"><label for="cfg-repo">GitHub-Repository (Besitzer/Name)</label><input id="cfg-repo" type="text" autocomplete="off" spellcheck="false"></div>
       <div class="field"><label for="cfg-branch">Zweig</label><input id="cfg-branch" type="text" autocomplete="off" spellcheck="false"></div>
       <div class="field"><label for="cfg-path">Datei</label><input id="cfg-path" type="text" autocomplete="off" spellcheck="false"></div>
-      <div class="field"><label for="cfg-interval">Signal prüfen alle (Sekunden)</label><input id="cfg-interval" type="number" min="5" max="600" step="1"></div>
+      <div class="field"><label for="cfg-interval">Signal prüfen alle (Sekunden; ohne Token erlaubt GitHub rund einmal pro Minute)</label><input id="cfg-interval" type="number" min="5" max="600" step="1"></div>
       <div class="field"><label for="cfg-token">GitHub-Token (nur bei privatem Repository)</label><input id="cfg-token" type="password" autocomplete="off"></div>
       <div class="form-actions">
         <button class="btn-ghost" type="submit">Speichern</button>
@@ -167,7 +196,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 
   <details>
     <summary>Für die Spielleitung</summary>
-    <p>Der Klangtisch liest die Datei <code id="gm-path">klang.json</code> im Repository <code id="gm-repo">…</code> und wechselt die Playlist, sobald sich darin <code>ort</code> oder <code>gesetzt</code> ändert. Felder:</p>
+    <p>Die Datei <code id="gm-path">klang.json</code> im Repository <code id="gm-repo">…</code> ist das Signal: Jede Änderung löst die <a id="gm-runs" href="https://github.com" target="_blank" rel="noopener">GitHub-Automatik</a> aus, und diese Seite zeigt den Ort. Felder:</p>
     <ul>
       <li><code>ort</code> – Schlüssel des Ortstyps: <code>hafenstadt</code>, <code>dorf</code>, <code>landstrasse</code>, <code>kueste</code>, <code>wald</code>, <code>sumpf</code>, <code>nacht</code>, <code>schenke</code>, <code>ruinen</code></li>
       <li><code>ortname</code> – Name des Ortes im Spiel, etwa „Monmurg“ (wahlweise)</li>
@@ -180,7 +209,6 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
   </details>
 </div>
 
-<script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
 <script>
 (function(){
   'use strict';
@@ -197,6 +225,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
     {key:'ruinen',name:'Ruinen und Unterwelt',line:'Gewölbe, Tropfen, Hall. Tiefe Streicher, Glocken- und Metallklänge.',id:'54VMiUl0OflGJOSKSTAVXk'}
   ];
   const byKey={};ORTE.forEach(o=>{o.uri='spotify:playlist:'+o.id;byKey[o.key]=o;});
+  const spotifyUrl=o=>'https://open.spotify.com/playlist/'+o.id;
   const norm=s=>String(s||'').toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').replace(/[^a-z]/g,'');
   function resolveOrt(v){
     if(typeof v!=='string'||!v.trim())return null;
@@ -210,14 +239,14 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
   const sess={get(k){try{return sessionStorage.getItem(k);}catch(e){return null;}},set(k,v){try{sessionStorage.setItem(k,v);}catch(e){}},del(k){try{sessionStorage.removeItem(k);}catch(e){}}};
 
   /* ---------- Einstellungen ---------- */
-  const DEFAULTS={mode:'connect',clientId:'',deviceId:'',deviceName:'',fadeSec:3,shuffle:true,switchMode:'ende',maxWait:60,repo:'MaxwellSilverhammer-mk/wegwart-klang',branch:'main',path:'klang.json',interval:15,token:''};
+  const DEFAULTS={mode:'auto',clientId:'',deviceId:'',deviceName:'',fadeSec:3,shuffle:true,switchMode:'ende',maxWait:60,repo:'MaxwellSilverhammer-mk/wegwart-klang',branch:'main',path:'klang.json',interval:60,token:''};
   const cfg=Object.assign({},DEFAULTS,store.get('klangtisch.cfg',{})||{});
-  cfg.interval=Math.min(600,Math.max(5,+cfg.interval||15));cfg.maxWait=Math.min(600,Math.max(0,+cfg.maxWait||0));cfg.fadeSec=Math.min(20,Math.max(0,+cfg.fadeSec||0));cfg.mode=cfg.mode==='embed'?'embed':'connect';
+  cfg.interval=Math.min(600,Math.max(5,+cfg.interval||DEFAULTS.interval));cfg.maxWait=Math.min(600,Math.max(0,+cfg.maxWait||0));cfg.fadeSec=Math.min(20,Math.max(0,+cfg.fadeSec||0));cfg.mode=['auto','connect','embed'].indexOf(cfg.mode)>=0?cfg.mode:'auto';cfg.clientId=cfg.clientId||DEFAULTS.clientId;
   const saveCfg=()=>store.set('klangtisch.cfg',cfg);
   const secure=location.protocol==='https:'||/^http:\/\/(127\.0\.0\.1|localhost)(:|\/|$)/.test(location.href);
   const redirectUri=(()=>{try{if(location.protocol==='file:')return '';return location.origin+location.pathname.replace(/index\.html?$/,'');}catch(e){return '';}})();
 
-  const el={lamp:$('lamp'),status:$('status'),playline:$('playline'),playtext:$('playtext'),now:$('now'),eyebrow:$('now-eyebrow'),name:$('now-name'),line:$('now-line'),hint:$('now-hint'),start:$('start'),pause:$('pause'),switchNote:$('switch-note'),setup:$('setup'),setupNote:$('setup-note'),embed:$('embed-iframe'),list:$('orte'),cfgNote:$('cfg-note'),device:$('cfg-device')};
+  const el={lamp:$('lamp'),status:$('status'),playline:$('playline'),playtext:$('playtext'),now:$('now'),eyebrow:$('now-eyebrow'),name:$('now-name'),line:$('now-line'),hint:$('now-hint'),start:$('start'),openNow:$('open-now'),pause:$('pause'),switchNote:$('switch-note'),setup:$('setup'),setupNote:$('setup-note'),embed:$('embed-iframe'),list:$('orte'),cfgNote:$('cfg-note'),device:$('cfg-device')};
 
   /* ---------- Liste ---------- */
   ORTE.forEach(o=>{
@@ -227,9 +256,10 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
     const nm=document.createElement('span');nm.className='ort-name';nm.textContent=o.name;
     const ln=document.createElement('span');ln.className='ort-line';ln.textContent=o.line;
     txt.appendChild(nm);txt.appendChild(ln);
-    const b=document.createElement('button');b.className='ort-play';b.type='button';b.textContent='Abspielen';b.setAttribute('aria-label',o.name+' abspielen');
+    const b=document.createElement('button');b.className='ort-play only-page';b.type='button';b.textContent='Abspielen';b.setAttribute('aria-label',o.name+' abspielen');
     b.addEventListener('click',()=>manual(o));
-    li.appendChild(dot);li.appendChild(txt);li.appendChild(b);
+    const a=document.createElement('a');a.className='ort-play only-auto';a.href=spotifyUrl(o);a.target='_blank';a.rel='noopener';a.textContent='Öffnen';a.setAttribute('aria-label',o.name+' in Spotify öffnen');
+    li.appendChild(dot);li.appendChild(txt);li.appendChild(b);li.appendChild(a);
     el.list.appendChild(li);
   });
   function markList(activeKey,pendingKey){
@@ -237,7 +267,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
   }
 
   /* ---------- Zustand ---------- */
-  let signal=null,playing=null,pending=null,pendingSince=0,armed=false,manualUntilNext=false,switching=false;
+  let signal=null,playing=null,pending=null,pendingSince=0,armed=false,manualUntilNext=false,switching=false,queued=null;
   let lastCheck=0,backoffUntil=0,lastError='',etag=null,pollTimer=null,polling=false;
 
   function setLamp(state,text){el.lamp.className='lamp'+(state?' '+state:'');el.status.textContent=text;}
@@ -249,10 +279,17 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
     const h=Math.round(m/60);if(h<24)return 'vor '+h+(h===1?' Stunde':' Stunden');
     const d=new Date(t);return 'am '+d.getDate()+'.'+(d.getMonth()+1)+'.';
   }
+  function inTime(ts){
+    const s=Math.max(0,Math.round((ts-Date.now())/1000));
+    if(s<60)return 'in '+s+' s';
+    const m=Math.ceil(s/60);return 'in '+m+(m===1?' Minute':' Minuten');
+  }
   function renderNow(){
+    const auto=cfg.mode==='auto';
+    document.body.dataset.mode=cfg.mode;
     const o=playing||(signal&&signal.ort)||null;
     const src=signal;
-    markList(playing?playing.key:null,pending?pending.key:null);
+    markList(auto?(o&&o.key):(playing?playing.key:null),pending?pending.key:null);
     if(!o){el.eyebrow.textContent='Jetzt am Ort';el.name.textContent='Noch kein Ort gesetzt';el.line.textContent='Sobald die Spielleitung beim 🧭 einen Ort setzt, wechselt die Musik von selbst.';el.hint.hidden=true;}
     else{
       const showSignal=src&&src.ort&&src.ort.key===o.key;
@@ -261,18 +298,20 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       if(showSignal&&src.hinweis){el.hint.textContent=src.hinweis;el.hint.hidden=false;}else{el.hint.hidden=true;}
     }
     let note='';
-    if(switching)note='Wechsle …';
+    if(auto)note=o?'Einmal starten. Danach schaltet die Automatik von selbst um, solange eine Orts-Playlist spielt; diese Seite darf zu sein.':'';
+    else if(switching)note='Wechsle …';
     else if(pending)note='Wechsel zu „'+pending.name+'“ '+(cfg.switchMode==='sofort'?'jetzt':'am Ende des Stücks'+(cfg.maxWait>0?', spätestens in '+Math.max(0,Math.round((pendingSince+cfg.maxWait*1000-Date.now())/1000))+' s':''));
     else if(!armed)note=cfg.mode==='connect'?'Einmal starten – danach wechselt der Klangtisch ohne dein Zutun.':'Einmal starten. Spielt Spotify nicht los, einmal im Player auf Play tippen; danach läuft es von allein.';
     else if(signal&&!signal.ort&&signal.raw)note='Unbekannter Ort im Signal: „'+signal.raw+'“';
     el.switchNote.textContent=note;
     const needsAuth=cfg.mode==='connect'&&!tokens;
     el.start.textContent=needsAuth?'Mit Spotify verbinden':'Klangtisch starten';
-    el.start.hidden=armed;el.start.disabled=switching;
-    el.pause.hidden=!armed||cfg.mode==='connect';
-    el.setup.hidden=!(cfg.mode==='connect'&&!tokens);
+    el.start.hidden=armed||auto;el.start.disabled=switching;
+    el.openNow.hidden=!auto||!o;if(o)el.openNow.href=spotifyUrl(o);
+    el.pause.hidden=!armed||cfg.mode!=='embed';
+    el.setup.hidden=!((cfg.mode==='connect'&&!tokens)||(auto&&!cfg.clientId));
     el.embed.hidden=cfg.mode!=='embed';
-    if(cfg.mode==='connect'&&!secure)el.setupNote.textContent='Die Steuerung der Spotify-App braucht eine Adresse mit https (zum Beispiel GitHub Pages). Als Datei geöffnet geht nur der Player auf der Seite.';
+    if(cfg.mode!=='embed'&&!secure)el.setupNote.textContent='Die Steuerung der Spotify-App braucht eine Adresse mit https (zum Beispiel GitHub Pages). Als Datei geöffnet geht nur der Player auf der Seite.';
     else el.setupNote.textContent='';
   }
   function renderStatus(){
@@ -309,6 +348,13 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
     const p=new URLSearchParams(location.search);
     if(!p.has('code')&&!p.has('error'))return;
     const clean=()=>{try{history.replaceState({},'',redirectUri||location.pathname);}catch(e){}};
+    const autoState=sess.get('klangtisch.autostate');
+    if(autoState&&autoState===p.get('state')){
+      sess.del('klangtisch.autostate');clean();$('auto').open=true;
+      if(p.get('error'))autoInfo='Spotify hat die Zustimmung abgelehnt: '+p.get('error');
+      else{autoCode=p.get('code');autoInfo='';}
+      return;
+    }
     if(p.get('error')){lastError='Spotify hat die Verbindung abgelehnt: '+p.get('error');clean();return;}
     const verifier=sess.get('klangtisch.pkce'),state=sess.get('klangtisch.state');
     clean();
@@ -335,8 +381,14 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
   async function listDevices(){const j=await api('GET','/me/player/devices');return (j&&j.devices)||[];}
   async function setVolume(v,dev){await api('PUT','/me/player/volume?volume_percent='+Math.round(v)+(dev?'&device_id='+encodeURIComponent(dev):''));}
   async function ramp(from,to,ms,dev){const steps=Math.max(2,Math.min(8,Math.round(ms/450)));for(let i=1;i<=steps;i++){try{await setVolume(from+(to-from)*i/steps,dev);}catch(e){return false;}if(i<steps)await sleep(ms/steps);}return true;}
+  function spotifyMessage(e){
+    if(e.reason==='PREMIUM_REQUIRED')return 'Spotify verlangt für die Steuerung ein Premium-Konto.';
+    return e.message||'Spotify-Wechsel fehlgeschlagen.';
+  }
   async function switchConnect(o){
-    if(switching)return;switching=true;renderNow();
+    if(switching){queued=o;return;}
+    switching=true;renderNow();
+    let restore=null,restoreDev='';
     try{
       let st=null;try{st=await api('GET','/me/player');}catch(e){}
       if(st&&st.is_playing&&st.context&&st.context.uri===o.uri){playing=o;lastError='';return;}
@@ -346,7 +398,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       const vol=(dev&&dev.supports_volume!==false&&typeof dev.volume_percent==='number'&&(!devId||dev.id===devId))?dev.volume_percent:null;
       const wasPlaying=!!(st&&st.is_playing)&&(!devId||(dev&&dev.id===devId));
       let faded=false;
-      if(wasPlaying&&vol!==null&&fade>0&&vol>0)faded=await ramp(vol,0,fade,devId);
+      if(wasPlaying&&vol!==null&&fade>0&&vol>0){restore=vol;restoreDev=devId;faded=await ramp(vol,0,fade,devId);}
       const q=devId?'?device_id='+encodeURIComponent(devId):'';
       const body={context_uri:o.uri};
       if(cfg.shuffle)body.offset={position:Math.floor(Math.random()*20)};
@@ -360,17 +412,29 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
           devId=pick.id;
           try{await api('PUT','/me/player',{device_ids:[pick.id],play:false});}catch(e2){}
           await sleep(900);
-          await api('PUT','/me/player/play?device_id='+encodeURIComponent(pick.id),body);started=true;
+          try{await api('PUT','/me/player/play?device_id='+encodeURIComponent(pick.id),body);}
+          catch(e3){if(!body.offset)throw e3;delete body.offset;await api('PUT','/me/player/play?device_id='+encodeURIComponent(pick.id),body);}
+          started=true;
         }else if(cfg.shuffle&&e.status>=400&&e.status<500){
           delete body.offset;await api('PUT','/me/player/play'+q,body);started=true;
         }else throw e;
       }
       if(started&&cfg.shuffle){try{await api('PUT','/me/player/shuffle?state=true'+(devId?'&device_id='+encodeURIComponent(devId):''));}catch(e){}}
-      if(faded&&vol!==null){await sleep(500);await ramp(0,vol,fade,devId);}
-      else if(vol!==null&&!faded&&wasPlaying&&fade>0){try{await setVolume(vol,devId);}catch(e){}}
+      if(faded&&vol!==null){await sleep(500);if(await ramp(0,vol,fade,devId))restore=null;}
       playing=o;lastError='';ring();
-    }catch(e){lastError=e.message||'Spotify-Wechsel fehlgeschlagen.';}
-    finally{switching=false;renderNow();renderStatus();}
+    }catch(e){lastError=spotifyMessage(e);}
+    finally{
+      if(restore!==null){try{await setVolume(restore,restoreDev);}catch(e){}}
+      switching=false;renderNow();renderStatus();
+      const next=queued;queued=null;
+      if(next&&(!playing||playing.key!==next.key))switchConnect(next);
+    }
+  }
+  /* Ist ein Wechsel fehlgeschlagen (Spotify war zu, kein Gerät), versucht es die nächste Prüfung noch einmal. */
+  function reconcile(){
+    if(cfg.mode!=='connect'||!armed||switching||manualUntilNext)return;
+    const o=signal&&signal.ort;
+    if(o&&(!playing||playing.key!==o.key))switchConnect(o);
   }
   let playPoll=null;
   async function pollPlayer(){
@@ -388,6 +452,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
   /* ---------- Player auf der Seite (Embed) ---------- */
   let iframeApi=null,controller=null,lastPos=-1,lastUpdate=0,isPlayingNow=false,embedPaused=false;
   window.onSpotifyIframeApiReady=function(IFrameAPI){iframeApi=IFrameAPI;if(cfg.mode==='embed')makeController();};
+  let iframeScript=false;
+  function loadIframeApi(){if(iframeScript)return;iframeScript=true;const s=document.createElement('script');s.src='https://open.spotify.com/embed/iframe-api/v1';s.async=true;document.head.appendChild(s);}
   function makeController(){
     if(controller||!iframeApi)return;
     const first=(signal&&signal.ort)||byKey.nacht;
@@ -449,7 +515,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       else if(wake){const w=wake;wake=null;w.release().catch(()=>{});}
     }catch(e){wake=null;}
   }
-  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){if(armed&&cfg.mode==='embed')keepAwake(true);poll();}});
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){if(armed&&cfg.mode==='embed')keepAwake(true);if(Date.now()-lastCheck>20000)poll();}});
 
   /* ---------- Signal aus GitHub ---------- */
   function b64utf8(b){const bin=atob(String(b||'').replace(/\s/g,''));const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder('utf-8').decode(bytes);}
@@ -473,17 +539,57 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
     fetch(apiUrl(),{headers,cache:'no-store'}).then(r=>{
       lastCheck=Date.now();
       const remaining=+r.headers.get('X-RateLimit-Remaining'),reset=+r.headers.get('X-RateLimit-Reset');
-      if(!isNaN(remaining)&&remaining>=0&&remaining<20&&reset>0){const perReq=Math.max(0,reset*1000-Date.now())/Math.max(1,remaining);wait=Math.max(wait,Math.ceil(perReq*1.15));}
+      /* GitHub zählt ohne Token auch unveränderte Antworten (60 je Stunde): Der Rest des Kontingents wird gleichmäßig auf die Zeit bis zum Zurücksetzen verteilt. */
+      if(!isNaN(remaining)&&remaining>=0&&reset>0){const left=Math.max(0,reset*1000-Date.now());wait=Math.max(wait,remaining>0?Math.ceil(left/remaining*1.1):left+1000);}
       if(r.status===304){if(lastError.indexOf('GitHub')===0||lastError.indexOf('Keine Verbindung')===0||lastError.indexOf('Datei')===0)lastError='';return null;}
       if(r.status===200){if(lastError.indexOf('GitHub')===0||lastError.indexOf('Keine Verbindung')===0||lastError.indexOf('Datei')===0)lastError='';const e=r.headers.get('ETag');if(e)etag=e;return r.json();}
-      if(r.status===403||r.status===429){const until=reset>0?reset*1000:Date.now()+60000;backoffUntil=Math.max(until,Date.now()+30000);lastError='GitHub bremst die Abfragen – weiter '+relTime(new Date(backoffUntil).toISOString()).replace('vor ','in ')+'.';return null;}
+      if(r.status===403||r.status===429){const until=reset>0?reset*1000:Date.now()+60000;backoffUntil=Math.max(until,Date.now()+30000);lastError='GitHub bremst die Abfragen – weiter '+inTime(backoffUntil)+'.';return null;}
       if(r.status===404){lastError='Datei oder Repository nicht gefunden: '+cfg.repo+' / '+cfg.path;return null;}
       if(r.status===401){lastError='GitHub-Token ungültig.';return null;}
       lastError='GitHub antwortet mit Status '+r.status+'.';return null;
     }).then(body=>{
       if(body&&body.content){let data=null;try{data=JSON.parse(b64utf8(body.content));}catch(e){lastError='klang.json ist kein gültiges JSON.';}if(data&&typeof data==='object')applySignal(data);}
-    }).catch(()=>{lastError='Keine Verbindung zu GitHub.';}).then(()=>{polling=false;renderStatus();schedule(wait);});
+    }).catch(()=>{lastError='Keine Verbindung zu GitHub.';}).then(()=>{polling=false;renderStatus();reconcile();schedule(wait);});
   }
+
+  /* ---------- Automatik einrichten ---------- */
+  /* Der Schlüssel entsteht im normalen Anmeldeablauf mit Client-Secret, denn nur dessen Refresh-Token bleibt gültig, wenn GitHub ihn immer wieder benutzt (der Token des PKCE-Ablaufs wechselt bei jeder Benutzung). Secret und Schlüssel liegen nur in diesem Fenster. */
+  let autoCode=null,autoKey=null,autoInfo='';
+  function renderAuto(){
+    $('auto-consent-note').textContent=autoCode||autoKey?'Zustimmung erhalten.':'';
+    $('auto-step-secret').hidden=!autoCode;
+    $('auto-step-key').hidden=!autoKey;
+    $('auto-github').href='https://github.com/'+cfg.repo.replace(/^\/+|\/+$/g,'')+'/settings/secrets/actions/new';
+    $('auto-note').textContent=autoInfo;
+  }
+  $('auto-consent').addEventListener('click',()=>{
+    if(!secure||!redirectUri){autoInfo='Das geht nur auf der Seite im Netz (https), nicht als Datei.';renderAuto();return;}
+    if(!cfg.clientId){$('settings').open=true;$('cfg-clientid').focus();autoInfo='Bitte zuerst die Client-ID deiner Spotify-App in den Einstellungen eintragen und speichern.';renderAuto();return;}
+    const state=randomString(16);sess.set('klangtisch.autostate',state);
+    const u=new URL('https://accounts.spotify.com/authorize');
+    u.search=new URLSearchParams({client_id:cfg.clientId,response_type:'code',redirect_uri:redirectUri,scope:SCOPES,state,show_dialog:'true'}).toString();
+    location.assign(u.toString());
+  });
+  $('auto-make').addEventListener('click',async()=>{
+    const secret=$('auto-secret').value.trim();
+    if(!secret){autoInfo='Bitte das Client-Secret einfügen.';renderAuto();$('auto-secret').focus();return;}
+    autoInfo='Frage Spotify …';renderAuto();
+    try{
+      const r=await fetch('https://accounts.spotify.com/api/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({grant_type:'authorization_code',code:autoCode,redirect_uri:redirectUri,client_id:cfg.clientId,client_secret:secret})});
+      const j=await r.json().catch(()=>({}));
+      if(j.error==='invalid_grant'){autoCode=null;autoInfo='Die Zustimmung ist abgelaufen. Bitte noch einmal bei Spotify zustimmen.';$('auto-secret').value='';renderAuto();return;}
+      if(!r.ok||!j.refresh_token){autoInfo='Spotify lehnt das ab: '+(j.error_description||j.error||('Status '+r.status))+'. Stimmt das Client-Secret?';renderAuto();return;}
+      autoKey=JSON.stringify({client_id:cfg.clientId,client_secret:secret,refresh_token:j.refresh_token});
+      autoCode=null;autoInfo='';$('auto-secret').value='';
+    }catch(e){autoInfo='Spotify ist gerade nicht zu erreichen. Bitte noch einmal versuchen.';}
+    renderAuto();
+  });
+  $('auto-copy').addEventListener('click',()=>{
+    if(!autoKey)return;
+    const shown=()=>{const t=$('auto-key');t.value=autoKey;t.hidden=false;t.focus();t.select();autoInfo='Kopieren ging nicht von selbst. Der Schlüssel steht jetzt im Feld, bitte von Hand kopieren.';renderAuto();};
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(autoKey).then(()=>{autoInfo='Schlüssel kopiert.';renderAuto();}).catch(shown);
+    else shown();
+  });
 
   /* ---------- Formular ---------- */
   function fillDevices(devs){
@@ -494,7 +600,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
     sel.value=cfg.deviceId||'';
   }
   function fillForm(){
-    $('mode-connect').checked=cfg.mode==='connect';$('mode-embed').checked=cfg.mode==='embed';
+    $('mode-auto').checked=cfg.mode==='auto';$('mode-connect').checked=cfg.mode==='connect';$('mode-embed').checked=cfg.mode==='embed';
     $('cfg-clientid').value=cfg.clientId;$('cfg-fade').value=cfg.fadeSec;$('cfg-shuffle').value=cfg.shuffle?'1':'0';$('cfg-switch').value=cfg.switchMode;$('cfg-maxwait').value=cfg.maxWait;
     $('cfg-repo').value=cfg.repo;$('cfg-branch').value=cfg.branch;$('cfg-path').value=cfg.path;$('cfg-interval').value=cfg.interval;$('cfg-token').value=cfg.token;
     fillDevices([]);renderGm();
@@ -502,20 +608,21 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
   }
   function renderGm(){
     $('gm-repo').textContent=cfg.repo;$('gm-path').textContent=cfg.path;
-    const r=cfg.repo,p=cfg.path;
+    const r=cfg.repo;
+    $('gm-runs').href='https://github.com/'+r+'/actions/workflows/klang.yml';
     const dir='/home/claude/'+(r.split('/')[1]||'wegwart-klang');
     $('gm-cmd').textContent='# einmal je Sitzung\ngit clone -q --depth 1 -b '+cfg.branch+' https://github.com/'+r+' '+dir+'\n\n# bei jedem 🧭 (Ortstyp, Ortsname, Hinweis)\n'+dir+'/setze-ort.sh hafenstadt "Monmurg" "Die Werft hämmert bis in die Nacht."';
   }
   $('cfg-form').addEventListener('submit',ev=>{
     ev.preventDefault();
-    const newMode=$('mode-embed').checked?'embed':'connect';
-    cfg.mode=newMode;cfg.clientId=$('cfg-clientid').value.trim();cfg.deviceId=el.device.value;cfg.deviceName=el.device.value?(el.device.options[el.device.selectedIndex].textContent.replace(/ \(aktiv\)| \(gerade nicht erreichbar\)/g,'')):'';
+    const newMode=$('mode-embed').checked?'embed':($('mode-connect').checked?'connect':'auto');
+    cfg.mode=newMode;cfg.clientId=$('cfg-clientid').value.trim()||DEFAULTS.clientId;cfg.deviceId=el.device.value;cfg.deviceName=el.device.value?(el.device.options[el.device.selectedIndex].textContent.replace(/ \(aktiv\)| \(gerade nicht erreichbar\)/g,'')):'';
     cfg.fadeSec=Math.min(20,Math.max(0,+$('cfg-fade').value||0));cfg.shuffle=$('cfg-shuffle').value==='1';cfg.switchMode=$('cfg-switch').value==='sofort'?'sofort':'ende';cfg.maxWait=Math.min(600,Math.max(0,+$('cfg-maxwait').value||0));
     cfg.repo=$('cfg-repo').value.trim()||DEFAULTS.repo;cfg.branch=$('cfg-branch').value.trim()||DEFAULTS.branch;cfg.path=$('cfg-path').value.trim()||DEFAULTS.path;
-    cfg.interval=Math.min(600,Math.max(5,+$('cfg-interval').value||15));cfg.token=$('cfg-token').value.trim();
+    cfg.interval=Math.min(600,Math.max(5,+$('cfg-interval').value||DEFAULTS.interval));cfg.token=$('cfg-token').value.trim();
     saveCfg();etag=null;backoffUntil=0;lastError='';renderGm();
-    if(cfg.mode==='embed'&&!controller)makeController();
-    if(cfg.mode==='connect'&&armed&&!tokens){armed=false;sess.del('klangtisch.armed');}
+    if(cfg.mode==='embed'){loadIframeApi();makeController();}
+    if(cfg.mode==='auto'||(cfg.mode==='connect'&&armed&&!tokens)){armed=false;playing=null;pending=null;sess.del('klangtisch.armed');el.playline.hidden=true;}
     el.cfgNote.textContent='Gespeichert.';setTimeout(()=>{el.cfgNote.textContent='';},2500);
     renderNow();poll();
   });
@@ -537,6 +644,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
   (async()=>{
     fillForm();
     await handleRedirect();
+    renderAuto();
+    if(cfg.mode==='embed')loadIframeApi();
     if(cfg.mode==='connect'&&tokens&&sess.get('klangtisch.armed')==='1')armConnect();
     renderNow();renderStatus();poll();
   })();

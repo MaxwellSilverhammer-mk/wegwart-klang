@@ -1,0 +1,33 @@
+# Schaltet die Spotify-App um, sobald die Spielleitung einen neuen Ort in klang.json setzt.
+# Der Schlüssel KLANG_SPOTIFY liegt als Secret im Repository (Einrichtung: README).
+# Pull Requests von Fremden lösen diesen Lauf nicht aus und kommen nicht an das Secret.
+name: Klang
+
+on:
+  push:
+    branches: [main]
+    paths: [klang.json]
+  workflow_dispatch:
+
+# Läuft schon ein Wechsel, darf er seine Überblendung zu Ende bringen; danach zählt der neueste Ort.
+concurrency:
+  group: klang
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  wechsel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Stand holen
+        run: |
+          git init -q .
+          git fetch -q --depth 1 "https://github.com/${GITHUB_REPOSITORY}" "${GITHUB_SHA}"
+          git checkout -q FETCH_HEAD
+      - name: Orts-Playlist umschalten
+        env:
+          KLANG_SPOTIFY: ${{ secrets.KLANG_SPOTIFY }}
+        run: python3 .github/klang_wechsel.py
