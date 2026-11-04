@@ -20,7 +20,9 @@ Die Automatik schaltet **nur, solange in Spotify gerade eine der neun Orts-Playl
 3. **Schlüssel erzeugen:** Auf der Seite *Automatik einrichten* aufklappen, bei Spotify zustimmen, das Client-Secret einfügen. Der Schlüssel entsteht im Browser und wird nirgends gespeichert.
 4. **Schlüssel ablegen:** *Settings → Secrets and variables → Actions → New repository secret*, Name `KLANG_SPOTIFY`, Wert einfügen.
 
-Fertig; die Seite muss danach nicht mehr offen sein. Meldet ein Lauf „Spotify nimmt den Schlüssel nicht an“, die Schritte 3 und 4 wiederholen und das Secret überschreiben.
+Fertig; die Seite muss danach nicht mehr offen sein.
+
+**Der Schlüssel läuft nach sechs Monaten ab** (Spotify-Regel seit 2026: Die Frist beginnt bei der Zustimmung, und auch ständige Benutzung verlängert sie nicht). Dann schlägt der nächste Lauf fehl, GitHub schickt eine Mail, und `setze-ort.sh` sagt es der Spielleitung beim nächsten Ort. Die Schritte 3 und 4 wiederholen und das Secret überschreiben, das dauert zwei Minuten.
 
 **Was der Schlüssel darf:** nur die Wiedergabe lesen und steuern (`user-read-playback-state`, `user-modify-playback-state`), nicht an Playlists oder Kontodaten. Das Secret bleibt verschlossen, auch wenn das Repository öffentlich ist: Das Protokoll maskiert es, und Pull Requests von Fremden lösen die Automatik nicht aus. Das Protokoll eines Laufs (*Actions → Klang*) nennt nur den Ortstyp und was geschah.
 
@@ -52,7 +54,7 @@ git clone -q --depth 1 -b main https://github.com/MaxwellSilverhammer-mk/wegwart
 /home/claude/wegwart-klang/setze-ort.sh hafenstadt "Monmurg" "Die Werft hämmert bis in die Nacht."
 ```
 
-Das Skript holt den aktuellen Stand, schreibt `klang.json`, erzeugt einen Commit „Klang: …“ und schiebt ihn. (Die GitHub-API lässt sich aus Claude-Sitzungen nur lesen, nicht schreiben; deshalb der Weg über git.) Das Repository ist öffentlich: In `ortname` und `hinweis` steht nur, was die Figur weiß.
+Das Skript holt den aktuellen Stand, schreibt `klang.json`, erzeugt einen Commit „Klang: …“ und schiebt ihn. (Die GitHub-API lässt sich aus Claude-Sitzungen nur lesen, nicht schreiben; deshalb der Weg über git.) Ist der letzte Lauf der Automatik fehlgeschlagen, meldet es das mit „ACHTUNG“; das sagt die Spielleitung dem Spieler in einem Satz in Klammern. Das Repository ist öffentlich: In `ortname` und `hinweis` steht nur, was die Figur weiß.
 
 Regel: nur beim 🧭 setzen, und nur, wenn sich der Ortstyp ändert. Innerhalb eines Ortes bleibt die Musik, auch im Kampf.
 

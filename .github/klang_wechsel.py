@@ -76,10 +76,16 @@ def zugriff_holen(zugang):
         inhalt = {}
     if status != 200 or "access_token" not in inhalt:
         raise SystemExit(
-            "Spotify nimmt den Schlüssel nicht an (Status %s, %s). "
-            "Schlüssel neu erzeugen, siehe README." % (status, inhalt.get("error", "unbekannt"))
+            "Spotify nimmt den Schlüssel nicht an (Status %s, %s). Er läuft sechs Monate nach "
+            "seiner Erzeugung ab: auf der Seite unter „Automatik einrichten“ neu erzeugen und "
+            "das Secret KLANG_SPOTIFY überschreiben." % (status, inhalt.get("error", "unbekannt"))
         )
     print("::add-mask::" + inhalt["access_token"], flush=True)
+    neu = inhalt.get("refresh_token")
+    if neu and neu != zugang["refresh_token"]:
+        # Im Ablauf mit Client-Secret sollte das nicht vorkommen; falls doch, erklärt es den nächsten Fehlschlag.
+        print("::add-mask::" + neu, flush=True)
+        print("Hinweis: Spotify hat einen neuen Refresh-Token ausgegeben; der Schlüssel bleibt unverändert.")
     return inhalt["access_token"]
 
 

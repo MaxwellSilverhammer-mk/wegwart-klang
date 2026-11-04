@@ -120,11 +120,23 @@ const URI = { wald: 'spotify:playlist:602nYr5A65NHe1vjKP3yWf', sumpf: 'spotify:p
     await context.close();
   }
 
-  // ---------- A2: ohne Client-ID wird die Einrichtung angezeigt ----------
+  // ---------- A1: ohne jede Einstellung ist die Client-ID schon da ----------
   {
     const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
     await dienste(context, { signal: SIGNAL('wald'), player: {} });
     const page = await context.newPage();
+    await page.goto(SEITE);
+    await page.waitForFunction(() => document.getElementById('now-name').textContent === 'Wald und Hain');
+    pruefe(!(await page.locator('#setup').isVisible()), 'A1: frischer Browser braucht keine Client-ID');
+    await context.close();
+  }
+
+  // ---------- A2: ohne Client-ID (eigener Fork) wird die Einrichtung angezeigt ----------
+  {
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    await dienste(context, { signal: SIGNAL('wald'), player: {} });
+    const page = await context.newPage();
+    await page.route(SEITE, r => r.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: HTML.replace(/clientId:'\w+',deviceId/, "clientId:'',deviceId") }));
     await page.goto(SEITE);
     await page.waitForFunction(() => document.getElementById('now-name').textContent === 'Wald und Hain');
     pruefe(await page.locator('#setup').isVisible(), 'A2: ohne Client-ID Karte „Spotify-App anlegen“');

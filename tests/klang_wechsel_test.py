@@ -212,7 +212,26 @@ class Hauptlauf(unittest.TestCase):
         with self.assertRaises(SystemExit) as ende:
             self.lauf(Spotify(stand(), token_status=400))
         self.assertIn("neu erzeugen", str(ende.exception))
+        self.assertIn("sechs Monate", str(ende.exception))
         self.assertNotIn("GEHEIM", str(ende.exception))
+
+    def test_neuer_refresh_token_wird_maskiert_und_nicht_gedruckt(self):
+        s = Spotify(stand())
+        echt = s.__call__
+
+        def mit_neuem(methode, adresse, daten=None, kopf=None):
+            if adresse == kw.ANMELDUNG:
+                s.anfragen.append((methode, adresse, daten, kopf))
+                return 200, b'{"access_token":"zugriff","refresh_token":"GEHEIM3"}', {}
+            return echt(methode, adresse, daten, kopf)
+
+        code, text = self.lauf(mit_neuem)
+        self.assertEqual(code, 0)
+        self.assertIn("::add-mask::GEHEIM3", text)
+        self.assertIn("neuen Refresh-Token", text)
+        for zeile in text.splitlines():
+            if not zeile.startswith("::add-mask::"):
+                self.assertNotIn("GEHEIM", zeile)
 
     def test_unbekannter_ort_still(self):
         Path("klang.json").write_text('{"ort":"mond"}', encoding="utf-8")

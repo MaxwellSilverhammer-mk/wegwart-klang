@@ -37,6 +37,17 @@ PY
   git -c user.name="Spielleitung" -c user.email="spielleitung@wegwart.local" commit -q -m "Klang: $ORT${ORTNAME:+ ($ORTNAME)}" -- "$DATEI"
   if git push -q origin "$BRANCH"; then
     echo "Klang gesetzt: $ORT${ORTNAME:+ – $ORTNAME}"
+    # Ging der letzte Lauf der Automatik schief (etwa ein abgelaufener Schlüssel), soll die Spielleitung es sagen.
+    REPO="$(git remote get-url origin | sed -E 's#^.*github\.com[/:]##; s#\.git$##')"
+    curl -fsS --max-time 8 "https://api.github.com/repos/$REPO/actions/workflows/klang.yml/runs?per_page=1&status=completed" 2>/dev/null | python3 -c '
+import json, sys
+try:
+    laeufe = json.load(sys.stdin).get("workflow_runs") or []
+except ValueError:
+    laeufe = []
+if laeufe and laeufe[0].get("conclusion") == "failure":
+    print("ACHTUNG: Der letzte Lauf der Klang-Automatik ist fehlgeschlagen: " + laeufe[0].get("html_url", "") + " – sag das dem Spieler in einem Satz in Klammern.")
+' || true
     exit 0
   fi
   sleep 2

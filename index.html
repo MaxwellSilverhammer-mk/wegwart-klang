@@ -147,7 +147,7 @@ body:not([data-mode="auto"]) .only-auto{display:none !important}
 
   <details id="auto" class="only-auto">
     <summary>Automatik einrichten</summary>
-    <p>Einmalig. Danach schaltet GitHub deine Spotify-App um, sobald das Spiel einen neuen Ortstyp setzt, auch wenn diese Seite zu ist. Sie schaltet nur, solange in Spotify gerade eine Orts-Playlist spielt: Pause, Podcast oder eigene Musik lässt sie in Ruhe.</p>
+    <p>Danach schaltet GitHub deine Spotify-App um, sobald das Spiel einen neuen Ortstyp setzt, auch wenn diese Seite zu ist. Sie schaltet nur, solange in Spotify gerade eine Orts-Playlist spielt: Pause, Podcast oder eigene Musik lässt sie in Ruhe. Spotify lässt den Schlüssel nach sechs Monaten ablaufen; dann hier einfach neu erzeugen und das Secret in GitHub überschreiben.</p>
     <ol class="steps">
       <li><button class="btn-ghost" type="button" id="auto-consent">Bei Spotify zustimmen</button> <span class="note" id="auto-consent-note"></span></li>
       <li id="auto-step-secret" hidden>
@@ -239,7 +239,7 @@ body:not([data-mode="auto"]) .only-auto{display:none !important}
   const sess={get(k){try{return sessionStorage.getItem(k);}catch(e){return null;}},set(k,v){try{sessionStorage.setItem(k,v);}catch(e){}},del(k){try{sessionStorage.removeItem(k);}catch(e){}}};
 
   /* ---------- Einstellungen ---------- */
-  const DEFAULTS={mode:'auto',clientId:'',deviceId:'',deviceName:'',fadeSec:3,shuffle:true,switchMode:'ende',maxWait:60,repo:'MaxwellSilverhammer-mk/wegwart-klang',branch:'main',path:'klang.json',interval:60,token:''};
+  const DEFAULTS={mode:'auto',clientId:'744b0a345e664efba535e271a4cabd7e',deviceId:'',deviceName:'',fadeSec:3,shuffle:true,switchMode:'ende',maxWait:60,repo:'MaxwellSilverhammer-mk/wegwart-klang',branch:'main',path:'klang.json',interval:60,token:''};
   const cfg=Object.assign({},DEFAULTS,store.get('klangtisch.cfg',{})||{});
   cfg.interval=Math.min(600,Math.max(5,+cfg.interval||DEFAULTS.interval));cfg.maxWait=Math.min(600,Math.max(0,+cfg.maxWait||0));cfg.fadeSec=Math.min(20,Math.max(0,+cfg.fadeSec||0));cfg.mode=['auto','connect','embed'].indexOf(cfg.mode)>=0?cfg.mode:'auto';cfg.clientId=cfg.clientId||DEFAULTS.clientId;
   const saveCfg=()=>store.set('klangtisch.cfg',cfg);
