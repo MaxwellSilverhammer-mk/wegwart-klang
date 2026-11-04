@@ -106,7 +106,11 @@ def api(token, methode, pfad, inhalt=None):
             continue
         break
     if 200 <= status < 300:
-        return json.loads(roh) if roh else None
+        # Spotify antwortet auf Befehle wie Shuffle gelegentlich mit einem Text, der kein JSON ist.
+        try:
+            return json.loads(roh) if roh else None
+        except ValueError:
+            return None
     try:
         fehler = json.loads(roh).get("error", {})
     except (ValueError, AttributeError):

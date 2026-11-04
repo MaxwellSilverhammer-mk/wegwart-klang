@@ -44,7 +44,8 @@ class Spotify:
                 return 403, b'{"error":{"status":403,"message":"nein","reason":"VOLUME_CONTROL_DISALLOW"}}', {}
             return 204, b"", {}
         if pfad.startswith("/me/player/shuffle"):
-            return 204, b"", {}
+            # So antwortet das echte Spotify: 200 mit einem Text, der kein JSON ist (Probelauf 4.11.2026).
+            return 200, b"f3a9c1", {}
         if pfad.startswith("/me/player/play"):
             if self.play_antworten:
                 return self.play_antworten.pop(0)
