@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 # Setzt den Ort für den Klangtisch (Die Wege von Oerik) und schiebt ihn ins Repository.
-# Aufruf:  ./setze-ort.sh <ortstyp> ["Ortsname"] ["Hinweis"]
+# Aufruf:  ./setze-ort.sh <ortstyp>
+# Das Repository ist öffentlich, mit seinem ganzen Verlauf: Das Signal nennt nur den Ortstyp.
+# Ortsname und Hinweis kommen nicht hinein, auch nicht in die Commit-Nachricht (seit dem 5.11.2026).
 # Ortstypen: hafenstadt dorf landstrasse kueste wald sumpf nacht schenke ruinen
 # Läuft in einem Klon dieses Repositorys (git mit Schreibzugriff), braucht python3.
 set -euo pipefail
 
 ORT="${1:-}"
-ORTNAME="${2:-}"
-HINWEIS="${3:-}"
+ORTNAME=""
+HINWEIS=""
 DATEI="klang.json"
+if [ "$#" -gt 1 ]; then echo "Hinweis: Ortsname und Hinweis werden nicht veröffentlicht; das Signal nennt nur den Ortstyp." >&2; fi
 
 case "$ORT" in
   hafenstadt|dorf|landstrasse|kueste|wald|sumpf|nacht|schenke|ruinen) ;;
@@ -34,11 +37,11 @@ print(json.dumps({
 }, ensure_ascii=False, indent=2))
 PY
 
-  git -c user.name="Spielleitung" -c user.email="spielleitung@wegwart.local" commit -q -m "Klang: $ORT${ORTNAME:+ ($ORTNAME)}" -- "$DATEI"
+  git -c user.name="Spielleitung" -c user.email="spielleitung@wegwart.local" commit -q -m "Klang: $ORT" -- "$DATEI"
   if git push -q origin "$BRANCH"; then
     # Die Playlists stehen nur in index.html; die Klangzeile nimmt ihren Verweis von hier.
     PLAYLIST="$(sed -n "s/.*{key:'$ORT',.*id:'\([A-Za-z0-9]*\)'}.*/\1/p" index.html)"
-    echo "Klang gesetzt: $ORT${ORTNAME:+ – $ORTNAME} · https://open.spotify.com/playlist/$PLAYLIST"
+    echo "Klang gesetzt: $ORT · https://open.spotify.com/playlist/$PLAYLIST"
     # Ging der letzte Lauf der Automatik schief (etwa ein abgelaufener Schlüssel), soll die Spielleitung es sagen.
     REPO="$(git remote get-url origin | sed -E 's#^.*github\.com[/:]##; s#\.git$##')"
     curl -fsS --max-time 8 "https://api.github.com/repos/$REPO/actions/workflows/klang.yml/runs?per_page=1&status=completed" 2>/dev/null | python3 -c '

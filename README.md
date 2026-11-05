@@ -33,15 +33,14 @@ Fertig; die Seite muss danach nicht mehr offen sein.
 ```json
 {
   "ort": "hafenstadt",
-  "ortname": "Monmurg",
-  "hinweis": "Die Werft hämmert bis in die Nacht.",
+  "ortname": "",
+  "hinweis": "",
   "gesetzt": "2026-10-29T18:00:00Z"
 }
 ```
 
 - `ort` – Ortstyp: `hafenstadt`, `dorf`, `landstrasse`, `kueste`, `wald`, `sumpf`, `nacht`, `schenke`, `ruinen`
-- `ortname` – Name des Ortes im Spiel (wahlweise)
-- `hinweis` – ein Satz zur Stimmung (wahlweise)
+- `ortname`, `hinweis` – bleiben leer (seit dem 5.11.2026): Das Repository ist öffentlich, mit seinem ganzen Verlauf, und das Signal soll nicht verraten, wo eine Figur gerade ist. Die Seite kommt ohne beide aus.
 - `gesetzt` – Zeitstempel in UTC; eine Änderung hier löst den Wechsel aus
 
 In einer Claude-Sitzung mit angebundenem Repository (`add_repo` mit Schreibzugriff) – einmal je Sitzung klonen, dann bei jedem 🧭 mit neuem Ortstyp das Skript aufrufen:
@@ -50,11 +49,11 @@ In einer Claude-Sitzung mit angebundenem Repository (`add_repo` mit Schreibzugri
 # einmal je Sitzung
 git clone -q --depth 1 -b main https://github.com/MaxwellSilverhammer-mk/wegwart-klang /home/claude/wegwart-klang
 
-# bei jedem 🧭 mit neuem Ortstyp (Ortstyp, Ortsname, Hinweis)
-/home/claude/wegwart-klang/setze-ort.sh hafenstadt "Monmurg" "Die Werft hämmert bis in die Nacht."
+# bei jedem 🧭 mit neuem Ortstyp (nur der Ortstyp)
+/home/claude/wegwart-klang/setze-ort.sh hafenstadt
 ```
 
-Das Skript holt den aktuellen Stand, schreibt `klang.json`, erzeugt einen Commit „Klang: …“, schiebt ihn und nennt den Verweis auf die Playlist für die Klangzeile. (Die GitHub-API lässt sich aus Claude-Sitzungen nur lesen, nicht schreiben; deshalb der Weg über git.) Ist der letzte Lauf der Automatik fehlgeschlagen, meldet es das mit „ACHTUNG“; das sagt die Spielleitung dem Spieler in einem Satz in Klammern. Das Repository ist öffentlich: In `ortname` und `hinweis` steht nur, was die Figur weiß.
+Das Skript holt den aktuellen Stand, schreibt `klang.json`, erzeugt einen Commit „Klang: …“, schiebt ihn und nennt den Verweis auf die Playlist für die Klangzeile. (Die GitHub-API lässt sich aus Claude-Sitzungen nur lesen, nicht schreiben; deshalb der Weg über git.) Ist der letzte Lauf der Automatik fehlgeschlagen, meldet es das mit „ACHTUNG“; das sagt die Spielleitung dem Spieler in einem Satz in Klammern. Das Repository ist öffentlich, mit seinem ganzen Verlauf: Das Signal und die Commit-Nachricht nennen nur den Ortstyp, nie den Ort. Was das Skript an weiteren Argumenten bekommt, verwirft es.
 
 Regel: nur beim 🧭 setzen, und nur, wenn sich der Ortstyp ändert. Innerhalb eines Ortes bleibt die Musik, auch im Kampf.
 
