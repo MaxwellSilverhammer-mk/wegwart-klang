@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Setzt den Ort für den Klangtisch (Wegwart der Seeprinzen) und schiebt ihn ins Repository.
+# Setzt den Ort für den Klangtisch (Die Wege von Oerik) und schiebt ihn ins Repository.
 # Aufruf:  ./setze-ort.sh <ortstyp> ["Ortsname"] ["Hinweis"]
 # Ortstypen: hafenstadt dorf landstrasse kueste wald sumpf nacht schenke ruinen
 # Läuft in einem Klon dieses Repositorys (git mit Schreibzugriff), braucht python3.

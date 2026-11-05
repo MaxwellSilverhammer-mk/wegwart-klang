@@ -1,6 +1,6 @@
 # Klangtisch · Live
 
-Musik für das Textabenteuer **Wegwart der Seeprinzen**, die von selbst wechselt: Die Spielleitung setzt beim 🧭 den Ortstyp in `klang.json`, und die passende Orts-Playlist läuft in deiner Spotify-App an, mit Überblendung, wo das Gerät es erlaubt. Du startest einmal je Sitzung, den Rest macht der Klangtisch.
+Musik für das Textabenteuer **Die Wege von Oerik**, die von selbst wechselt: Die Spielleitung setzt beim 🧭 den Ortstyp in `klang.json`, und die passende Orts-Playlist läuft in deiner Spotify-App an, mit Überblendung, wo das Gerät es erlaubt. Du startest einmal je Sitzung, den Rest macht der Klangtisch.
 
 ## Drei Wiedergabe-Arten
 
